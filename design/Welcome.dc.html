@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Start partner onboarding</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<style>
+body { margin: 0; background: #F5F6F8; color: #141A1F; font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+a { color: #0D5B52; }
+a:hover { color: #09413A; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column">
+
+  <header style="background: #FFFFFF; border-bottom: 1px solid #E1E5E9; padding: 0 32px; min-height: 64px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 12px 0">
+      <span style="width: 30px; height: 30px; border-radius: 7px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex: none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V8.5a4.5 4.5 0 0 1 9 0V20"></path><path d="M13 20V8.5a4.5 4.5 0 0 1 7 3.5V20"></path></svg>
+      </span>
+      <span style="font-size: 15px; font-weight: 600; letter-spacing: -0.01em">[YOUR COMPANY]</span>
+      <span style="width: 1px; height: 18px; background: #E1E5E9"></span>
+      <span style="font-size: 15px; color: #566069">Partner Onboarding</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 20px; padding: 12px 0">
+      <a href="#help" style="font-size: 14px; text-decoration: none">Help centre</a>
+      <a href="#terms" style="font-size: 14px; text-decoration: none">Supplier terms</a>
+    </div>
+  </header>
+
+  <main style="flex: 1; padding: 52px 32px 56px">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 44px">
+
+      <div style="display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start">
+
+        <div style="flex: 999 1 520px; min-width: 0">
+          <p style="margin: 0 0 14px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #0D5B52">Supplier application</p>
+          <h1 style="margin: 0; font-size: 44px; line-height: 1.12; font-weight: 600; letter-spacing: -0.025em; max-width: 17ch">List your product on the marketplace</h1>
+          <p style="margin: 20px 0 0; font-size: 16.5px; line-height: 1.65; color: #3E474F; max-width: 58ch">
+            An onboarding specialist will take you through the application in a single conversation — company details, what your product does, and how our platform will integrate with yours. Answer in your own words; it will ask for anything still missing and record each answer as you go.
+          </p>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px">
+            <a href="Main.dc.html" style="font-size: 15px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; background: {{accent}}; color: #FFFFFF; border-radius: 9px; padding: 0 26px; min-height: 48px">
+              Start the application
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+            </a>
+            <a href="Main.dc.html" style="font-size: 15px; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; background: #FFFFFF; color: #141A1F; border: 1px solid #D5DADF; border-radius: 9px; padding: 0 24px; min-height: 48px">
+              Resume a saved application
+            </a>
+          </div>
+
+          <p style="margin: 18px 0 0; font-size: 13.5px; color: #566069">
+            Nothing is published until our commercial team reviews it with you.
+          </p>
+        </div>
+
+        <aside style="flex: 1 1 340px; min-width: 320px; background: #FFFFFF; border: 1px solid #E1E5E9; border-radius: 14px; padding: 26px 26px 24px">
+          <h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 600">What to have to hand</h2>
+          <p style="margin: 0 0 18px; font-size: 13px; color: #566069">You can start without all of it and fill the gaps later.</p>
+          <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px">
+            <li style="display: flex; gap: 11px; align-items: flex-start">
+              <span style="width: 20px; height: 20px; border-radius: 50%; background: #E8F1EF; color: #0D5B52; display: flex; align-items: center; justify-content: center; flex: none; margin-top: 2px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+              </span>
+              <span style="font-size: 14px; line-height: 1.5">Your registered company name and trading address</span>
+            </li>
+            <li style="display: flex; gap: 11px; align-items: flex-start">
+              <span style="width: 20px; height: 20px; border-radius: 50%; background: #E8F1EF; color: #0D5B52; display: flex; align-items: center; justify-content: center; flex: none; margin-top: 2px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+              </span>
+              <span style="font-size: 14px; line-height: 1.5">A short summary of what your product does for a practice</span>
+            </li>
+            <li style="display: flex; gap: 11px; align-items: flex-start">
+              <span style="width: 20px; height: 20px; border-radius: 50%; background: #E8F1EF; color: #0D5B52; display: flex; align-items: center; justify-content: center; flex: none; margin-top: 2px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+              </span>
+              <span style="font-size: 14px; line-height: 1.5">Your API base URL and the authentication method it uses</span>
+            </li>
+            <li style="display: flex; gap: 11px; align-items: flex-start">
+              <span style="width: 20px; height: 20px; border-radius: 50%; background: #E8F1EF; color: #0D5B52; display: flex; align-items: center; justify-content: center; flex: none; margin-top: 2px">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+              </span>
+              <span style="font-size: 14px; line-height: 1.5">A technical contact we can reach during integration</span>
+            </li>
+          </ul>
+          <p style="margin: 20px 0 0; padding-top: 18px; border-top: 1px solid #EDEFF2; font-size: 13px; color: #566069; line-height: 1.55">
+            Sandbox credentials are requested later, over a secure channel — never in this conversation.
+          </p>
+        </aside>
+      </div>
+
+      <section>
+        <h2 style="margin: 0 0 18px; font-size: 15px; font-weight: 600; color: #566069; letter-spacing: 0.01em">How the application runs</h2>
+        <ol style="list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+          <li style="background: #FFFFFF; border: 1px solid #E1E5E9; border-radius: 14px; padding: 24px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; color: #0D5B52">01</span>
+            <h3 style="margin: 10px 0 8px; font-size: 17px; font-weight: 600">Company profile</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #3E474F">Who you are, where you trade, and who we should speak to about commercial and technical matters.</p>
+          </li>
+          <li style="background: #FFFFFF; border: 1px solid #E1E5E9; border-radius: 14px; padding: 24px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; color: #0D5B52">02</span>
+            <h3 style="margin: 10px 0 8px; font-size: 17px; font-weight: 600">Product &amp; features</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #3E474F">The capabilities your application exposes to a dental practice, and the problems each one solves.</p>
+          </li>
+          <li style="background: #FFFFFF; border: 1px solid #E1E5E9; border-radius: 14px; padding: 24px">
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; font-weight: 500; color: #0D5B52">03</span>
+            <h3 style="margin: 10px 0 8px; font-size: 17px; font-weight: 600">API &amp; integration</h3>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #3E474F">How our platform talks to yours: endpoints, authentication, and the environments we can test against.</p>
+          </li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <footer style="border-top: 1px solid #E1E5E9; background: #FFFFFF; padding: 20px 32px">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between">
+      <p style="margin: 0; font-size: 13px; color: #566069">© [YEAR] [YOUR COMPANY]. Supplier applications are handled by the partnerships team.</p>
+      <div style="display: flex; flex-wrap: wrap; gap: 20px">
+        <a href="#privacy" style="font-size: 13px; text-decoration: none">Privacy</a>
+        <a href="#terms" style="font-size: 13px; text-decoration: none">Supplier terms</a>
+        <a href="#accessibility" style="font-size: 13px; text-decoration: none">Accessibility</a>
+      </div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0D5B52","options":["#0D5B52","#1A4E8A","#4A3A86"],"section":"Theme"},"$preview":{"width":1360,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#0D5B52' };
+  }
+}
+</script>
+</body>
+</html>

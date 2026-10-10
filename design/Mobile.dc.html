@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Onboarding console on a phone</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+<style>
+body { margin: 0; background: #F5F6F8; color: #141A1F; font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+*, *::before, *::after { box-sizing: border-box; }
+a { color: #0D5B52; }
+a:hover { color: #09413A; }
+</style>
+</helmet>
+
+<div style="width: 390px; height: 844px; background: #F5F6F8; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="background: #FFFFFF; border-bottom: 1px solid #E1E5E9; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex: none">
+    <div style="display: flex; align-items: center; gap: 10px; min-width: 0">
+      <span style="width: 28px; height: 28px; border-radius: 7px; background: {{accent}}; display: flex; align-items: center; justify-content: center; flex: none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V8.5a4.5 4.5 0 0 1 9 0V20"></path><path d="M13 20V8.5a4.5 4.5 0 0 1 7 3.5V20"></path></svg>
+      </span>
+      <span style="font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Partner Onboarding</span>
+    </div>
+    <button type="button" aria-label="Open menu" style="width: 44px; height: 44px; margin: -8px -10px -8px 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; color: #141A1F; cursor: pointer">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16"></path><path d="M4 12h16"></path><path d="M4 17h16"></path></svg>
+    </button>
+  </header>
+
+  <div style="background: #FFFFFF; border-bottom: 1px solid #E1E5E9; padding: 12px 16px 14px; flex: none">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px">
+      <span style="font-size: 14px; font-weight: 600">Product &amp; features</span>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; color: #566069">Step 2 of 4</span>
+    </div>
+    <div style="margin-top: 9px; height: 5px; border-radius: 999px; background: #EDEFF2; display: flex; overflow: hidden">
+      <span style="width: 42%; background: {{accent}}"></span>
+    </div>
+    <p style="margin: 9px 0 0; font-size: 12.5px; color: #566069">Company profile saved · 4 answers still needed</p>
+  </div>
+
+  <main style="flex: 1; overflow: hidden; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+
+    <div style="display: flex; gap: 10px">
+      <span style="width: 28px; height: 28px; border-radius: 7px; background: #E8F1EF; color: #0D5B52; display: flex; align-items: center; justify-content: center; flex: none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      </span>
+      <div style="min-width: 0">
+        <p style="margin: 0 0 5px; font-size: 11.5px; font-weight: 600; color: #566069">Onboarding specialist</p>
+        <div style="background: #FFFFFF; border: 1px solid #E1E5E9; border-radius: 12px; border-top-left-radius: 4px; padding: 12px 14px; font-size: 14px; line-height: 1.6">
+          Thank you — that's the company section closed.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-left: 38px; border: 1px solid #D9E4E1; border-radius: 10px; overflow: hidden; background: #FFFFFF">
+      <p style="margin: 0; display: flex; align-items: center; gap: 7px; background: #EFF5F3; border-bottom: 1px solid #D9E4E1; padding: 8px 13px; font-size: 12px; font-weight: 600; color: #0D5B52">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+        Added to your submission
+      </p>
+      <dl style="margin: 0; padding: 12px 13px; display: flex; flex-direction: column; gap: 11px">
+        <div>
+          <dt style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #566069">Legal entity</dt>
+          <dd style="margin: 3px 0 0; font-size: 13.5px">Molaris Dental Imaging Ltd</dd>
+        </div>
+        <div>
+          <dt style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #566069">Primary contact</dt>
+          <dd style="margin: 3px 0 0; font-size: 13.5px">Integration lead</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div style="display: flex; gap: 10px">
+      <span style="width: 28px; height: 28px; flex: none"></span>
+      <div style="min-width: 0">
+        <div style="background: #FFFFFF; border: 1px solid #E1E5E9; border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.6">
+          Which capabilities does your application expose to a practice?
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px">
+          <button type="button" style="font: inherit; font-size: 13px; background: #FFFFFF; border: 1px solid #D5DADF; color: #141A1F; border-radius: 999px; padding: 0 14px; min-height: 44px; cursor: pointer">Intraoral scanning</button>
+          <button type="button" style="font: inherit; font-size: 13px; background: #FFFFFF; border: 1px solid #D5DADF; color: #141A1F; border-radius: 999px; padding: 0 14px; min-height: 44px; cursor: pointer">Imaging storage</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div style="background: #FFFFFF; border-top: 1px solid #E1E5E9; padding: 12px 16px 16px; flex: none">
+    <label for="reply-m" style="display: block; font-size: 12px; font-weight: 600; color: #566069; margin-bottom: 7px">Your reply</label>
+    <div style="display: flex; align-items: flex-end; gap: 9px">
+      <div style="flex: 1; min-width: 0; border: 1px solid #D5DADF; border-radius: 10px; padding: 10px 12px">
+        <textarea id="reply-m" rows="2" placeholder="Type your answer…" style="width: 100%; border: 0; resize: none; font: inherit; font-size: 14px; line-height: 1.55; background: transparent; color: #141A1F; outline: none; padding: 0"></textarea>
+      </div>
+      <button type="submit" aria-label="Send reply" style="width: 44px; height: 44px; flex: none; display: flex; align-items: center; justify-content: center; background: {{accent}}; border: 1px solid transparent; border-radius: 10px; color: #FFFFFF; cursor: pointer">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg>
+      </button>
+    </div>
+    <p style="margin: 9px 0 0; font-size: 12px; color: #566069">Saved automatically · you can close this and come back</p>
+  </div>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#0D5B52","options":["#0D5B52","#1A4E8A","#4A3A86"],"section":"Theme"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#0D5B52' };
+  }
+}
+</script>
+</body>
+</html>

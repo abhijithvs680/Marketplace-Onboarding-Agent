@@ -1,0 +1,28 @@
+{
+  "v": 3,
+  "attachments": {},
+  "createdOnFiles": {
+    "at": "2026-10-10T13:39:52.946Z",
+    "v": 1
+  },
+  "title": "Corporate Onboarding Agent",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "designSystems": [],
+  "boards": {
+    "Welcome.dc.html": { "x": 0, "y": 0, "w": 1360, "h": 900, "title": "1 · Welcome", "expand": "fill" },
+    "Main.dc.html": { "x": 1440, "y": 0, "w": 1360, "h": 1020, "title": "2 · Onboarding console", "expand": "fill" },
+    "Review.dc.html": { "x": 2880, "y": 0, "w": 1360, "h": 1020, "title": "3 · Submitted", "expand": "fill" },
+    "Mobile.dc.html": { "x": 4320, "y": 0, "w": 390, "h": 844, "title": "Console · phone" }
+  },
+  "order": ["Main.dc.html", "Welcome.dc.html", "Review.dc.html", "Mobile.dc.html"],
+  "notes": {
+    "t1": {
+      "x": 0,
+      "y": -300,
+      "text": "Partner onboarding — corporate agent experience",
+      "kind": "title1",
+      "maxW": 4710
+    }
+  }
+}
