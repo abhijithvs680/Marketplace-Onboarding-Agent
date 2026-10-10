@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { runOnboardingAgent, VizruError } from './vizru';
+import { getApplication, runOnboardingAgent, startSession, VizruError } from './vizru';
 import { COMPANY, SUPPORT_EMAIL } from './brand';
 import {
   loadRecord,
@@ -11,7 +11,13 @@ import {
   saveTranscript,
   type Turn,
 } from './session';
-import { mergeRecord, parseAgentReply, progressOf } from './submission';
+import {
+  capturedSince,
+  EMPTY_RECORD,
+  progressOf,
+  recordOf,
+  type SubmissionRecord,
+} from './submission';
 import { AppHeader } from './components/AppHeader';
 import { Composer } from './components/Composer';
 import { Conversation } from './components/Conversation';
@@ -43,8 +49,15 @@ export default function App() {
   const thread = useRef<HTMLDivElement | null>(null);
   const input = useRef<HTMLTextAreaElement | null>(null);
 
+  // The latest record, for callbacks that need to diff against it without
+  // taking it as a dependency (a state updater must stay pure).
+  const latest = useRef(record);
+
   useEffect(() => saveTranscript(turns), [turns]);
-  useEffect(() => saveRecord(record), [record]);
+  useEffect(() => {
+    latest.current = record;
+    saveRecord(record);
+  }, [record]);
   useEffect(() => () => inFlight.current?.abort(), []);
 
   useEffect(() => {
@@ -57,6 +70,40 @@ export default function App() {
     const timer = setTimeout(() => setNotice(null), 4000);
     return () => clearTimeout(timer);
   }, [notice]);
+
+  /**
+   * Read the application back from the platform and fold it into the record.
+   * Returns the turn-sized diff so the conversation can show what was added.
+   *
+   * A read that fails must never break the conversation: the agent's own reply
+   * is the vendor's business, the panel is a mirror of the platform. The
+   * developer gets the detail in the console.
+   */
+  const refresh = useCallback(async (signal?: AbortSignal) => {
+    const nothing: ReturnType<typeof capturedSince> = [];
+    try {
+      const state = await getApplication(sessionId, { signal });
+      if (!state) return nothing; // GetApplication not configured yet
+
+      const previous = latest.current;
+      const next = recordOf(state, previous);
+      latest.current = next;
+      setRecord(next);
+      return capturedSince(previous, next);
+    } catch (err) {
+      if (signal?.aborted) return nothing;
+      console.warn('[vizru] could not read the application state', err);
+      return nothing;
+    }
+  }, [sessionId]);
+
+  // Once on load, so a returning vendor sees the real state of their
+  // application rather than the last thing this browser happened to cache.
+  useEffect(() => {
+    const controller = new AbortController();
+    void refresh(controller.signal);
+    return () => controller.abort();
+  }, [refresh]);
 
   const progress = useMemo(() => progressOf(record), [record]);
 
@@ -81,19 +128,21 @@ export default function App() {
           sessionId,
           signal: controller.signal,
         });
-        const parsed = parseAgentReply(reply.text);
+
+        // The agent saves through its tools, so the state it just wrote is read
+        // back rather than parsed out of the prose.
+        const captured = await refresh(controller.signal);
 
         setTurns((prev) => [
           ...prev,
           {
             id: newTurnId(),
             role: 'agent',
-            text: parsed.text,
+            text: reply.text,
             at: Date.now(),
-            captured: parsed.captured.length ? parsed.captured : undefined,
+            captured: captured.length ? captured : undefined,
           },
         ]);
-        setRecord((prev) => mergeRecord(prev, parsed));
       } catch (err) {
         if (controller.signal.aborted) return;
         setTurns((prev) => [
@@ -116,21 +165,39 @@ export default function App() {
         input.current?.focus();
       }
     },
-    [pending, sessionId],
+    [pending, refresh, sessionId],
   );
 
   const open = useCallback(() => {
     setView('console');
-    // A fresh application needs the agent to speak first, and the workflow only
-    // answers a message — so the opening turn is sent on the vendor's behalf.
-    if (!turns.length) void send(FIRST_MESSAGE);
-  }, [send, turns.length]);
+    if (turns.length) return;
+
+    // A fresh application needs a row on the platform before the agent writes
+    // against it, and the agent only answers a message — so the session is
+    // opened and the first turn sent on the vendor's behalf.
+    void (async () => {
+      try {
+        const started = await startSession(sessionId);
+        if (started?.reference) {
+          const next = { ...latest.current, reference: started.reference };
+          latest.current = next;
+          setRecord(next);
+        }
+      } catch (err) {
+        // A missing reference is cosmetic; the conversation still works and
+        // GetApplication will supply one once the session row exists.
+        console.warn('[vizru] could not open the session on the platform', err);
+      }
+      await send(FIRST_MESSAGE);
+    })();
+  }, [send, sessionId, turns.length]);
 
   const startNew = useCallback(() => {
     inFlight.current?.abort();
     setSessionId(resetSession());
     setTurns([]);
-    setRecord({ captured: {}, submitted: false });
+    latest.current = EMPTY_RECORD;
+    setRecord(EMPTY_RECORD);
     setDraft('');
     setPending(false);
     setView('welcome');
@@ -150,7 +217,11 @@ export default function App() {
     return (
       <div className="app">
         <AppHeader vendor={record.captured.legal_entity} />
-        <Review record={record} sessionId={sessionId} onBack={() => setView('console')} />
+        <Review
+          record={record}
+          reference={referenceOf(record, sessionId)}
+          onBack={() => setView('console')}
+        />
         <Footer />
       </div>
     );
@@ -161,7 +232,7 @@ export default function App() {
       <AppHeader vendor={record.captured.legal_entity} />
       <StageBar progress={progress} />
 
-      <main className="page">
+      <main className="page page--console">
         <div className="page-inner console">
           <section className="card thread-card">
             <div className="card-head card-head--row">
@@ -204,7 +275,7 @@ export default function App() {
         </div>
       </main>
 
-      <Footer />
+      <Footer slim />
       {notice ? (
         <p className="toast" role="status">
           {notice}
@@ -214,9 +285,18 @@ export default function App() {
   );
 }
 
-function Footer() {
+/**
+ * The platform's reference once it has one. Until StartSession has run — or
+ * while its short code is unconfigured — the session id still gives the vendor
+ * and support something to quote.
+ */
+function referenceOf(record: SubmissionRecord, sessionId: string): string {
+  return record.reference ?? sessionId.slice(0, 8).toUpperCase();
+}
+
+function Footer({ slim = false }: { slim?: boolean }) {
   return (
-    <footer className="footer">
+    <footer className={slim ? 'footer footer--slim' : 'footer'}>
       <div className="footer-inner">
         <p className="muted">
           © {new Date().getFullYear()} {COMPANY}. Supplier applications are handled by the

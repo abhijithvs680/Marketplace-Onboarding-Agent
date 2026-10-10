@@ -1,26 +1,20 @@
 /**
- * The application record behind the console's progress bar and "Your
- * submission" panel.
+ * The application record behind the console's stage rail and "Your submission"
+ * panel.
  *
- * The workflow hands back prose and nothing else — `output[0].response` — so
- * the only honest way to light up the checklist is for the agent to say what it
- * captured. It does that with a marker block at the end of a reply:
+ * The record is **server-driven**: `MarketPlaceOnboard_GetApplication` reads
+ * VendorOnboardingSessions, Vendors, VendorFeatures and VendorApiInfo and
+ * answers with the shape in `ApplicationState`. `recordOf` maps that answer
+ * onto the fields the UI shows, and `capturedSince` is the per-turn diff the
+ * conversation renders as "Added to your submission".
  *
- *   [[vizru]]
- *   legal_entity: Molaris Dental Imaging Ltd
- *   primary_contact: Integration lead
- *   [[/vizru]]
- *
- * Deliberately brace-free. The workflow engine interpolates `{…}` inside
- * `system_prompt` and DELETES anything it cannot resolve, so a JSON example in
- * the system prompt would reach the model mangled. Square brackets and
- * `key: value` lines survive intact. A fenced JSON block tagged `vizru` is
- * accepted too, in case a model emits one anyway.
- *
- * Until the agent emits markers every field simply reads "Needed", which is
- * accurate — the client has not been told otherwise. See the README for the
- * system-prompt snippet that turns this on.
+ * Nothing here parses the agent's prose. The agent writes through its tools
+ * (`create_vendor`, `submit_application`) and the client reads the result back,
+ * so the checklist reflects what the platform actually stored rather than what
+ * a reply claimed.
  */
+
+import type { ApplicationState } from './vizru';
 
 export type StageId = 'company' | 'product' | 'integration' | 'review';
 
@@ -59,114 +53,86 @@ export const FIELDS: Field[] = [
   { id: 'sandbox_access', label: 'Sandbox access', stage: 'integration' },
 ];
 
-/** Names a model might reasonably use instead of the canonical field id. */
-const ALIASES: Record<string, FieldId> = {
-  company: 'legal_entity',
-  company_name: 'legal_entity',
-  vendor_name: 'legal_entity',
-  legal_name: 'legal_entity',
-  entity: 'legal_entity',
-  contact: 'primary_contact',
-  primary_contact_name: 'primary_contact',
-  technical_contact: 'primary_contact',
-  features: 'feature_summary',
-  feature_list: 'feature_summary',
-  product_summary: 'feature_summary',
-  api_url: 'api_base_url',
-  base_url: 'api_base_url',
-  api: 'api_base_url',
-  auth: 'auth_method',
-  authentication: 'auth_method',
-  sandbox: 'sandbox_access',
-  sandbox_credentials: 'sandbox_access',
-};
-
 export type Captured = Partial<Record<FieldId, string>>;
 
 export interface SubmissionRecord {
   captured: Captured;
   submitted: boolean;
+  /** The human reference from the platform, once StartSession has minted it. */
+  reference?: string;
+  /** The vendor row's id, once `create_vendor` has run. */
+  vendorId?: string;
 }
 
 export const EMPTY_RECORD: SubmissionRecord = { captured: {}, submitted: false };
 
-export interface ParsedReply {
-  /** The reply with any marker block removed — what the viewer reads. */
-  text: string;
-  /** Fields this reply reported, in FIELDS order. */
-  captured: Array<{ field: Field; value: string }>;
-  submitted: boolean;
-}
+/* ------------------------------------------------- the platform's read model */
 
-const BLOCK = /\[\[vizru\]\]([\s\S]*?)\[\[\/vizru\]\]/gi;
-const FENCE = /```(?:vizru|json:vizru)\s*([\s\S]*?)```/gi;
+/** Map a GetApplication response onto the record the UI renders. */
+export function recordOf(state: ApplicationState, previous?: SubmissionRecord): SubmissionRecord {
+  if (state.status === 'new') {
+    // The platform has never seen this session. Keep the reference we were
+    // given at startSession; there is nothing else to show yet.
+    return { captured: {}, submitted: false, reference: previous?.reference };
+  }
 
-export function parseAgentReply(raw: string): ParsedReply {
-  const found: Captured = {};
-  let submitted = false;
-  let text = raw;
+  const captured: Captured = {};
+  const set = (id: FieldId, value?: string) => {
+    const trimmed = value?.trim();
+    if (trimmed) captured[id] = trimmed;
+  };
 
-  text = text.replace(BLOCK, (_match, body: string) => {
-    for (const line of body.split('\n')) {
-      const at = line.indexOf(':');
-      if (at < 0) continue;
-      const key = line.slice(0, at);
-      const value = line.slice(at + 1);
-      apply(found, key, value);
-      if (isSubmittedKey(key, value)) submitted = true;
-    }
-    return '';
-  });
+  set('legal_entity', state.vendor?.legal_entity);
+  set('primary_contact', state.vendor?.primary_contact);
 
-  text = text.replace(FENCE, (match, body: string) => {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(body);
-    } catch {
-      return match; // not ours — leave it for the viewer to see
-    }
-    if (!parsed || typeof parsed !== 'object') return '';
-    const obj = parsed as Record<string, unknown>;
-    const bag = (
-      obj.captured && typeof obj.captured === 'object' ? obj.captured : obj
-    ) as Record<string, unknown>;
-    for (const [key, value] of Object.entries(bag)) {
-      if (typeof value === 'string') apply(found, key, value);
-    }
-    if (obj.submitted === true) submitted = true;
-    return '';
-  });
+  const features = (state.features ?? [])
+    .map((f) => f.feature?.trim())
+    .filter((f): f is string => Boolean(f));
+  set('feature_summary', features.join(', '));
 
-  const captured = FIELDS.filter((f) => found[f.id]).map((f) => ({
-    field: f,
-    value: found[f.id] as string,
-  }));
+  // Sandbox is the environment the integration stage asks about; fall back to
+  // whatever single environment the vendor gave.
+  const api = state.api ?? [];
+  const sandbox = api.find((row) => row.environment?.trim().toLowerCase() === 'sandbox');
+  const environment = sandbox ?? api[0];
 
-  return { text: text.replace(/\n{3,}/g, '\n\n').trim(), captured, submitted };
-}
-
-function apply(bag: Captured, rawKey: string, rawValue: string): void {
-  const key = rawKey.trim().toLowerCase().replace(/[\s-]+/g, '_');
-  const value = rawValue.trim().replace(/^["']|["']$/g, '');
-  if (!value || value.toLowerCase() === 'null' || value.toLowerCase() === 'none') return;
-
-  const id = (FIELDS.find((f) => f.id === key)?.id ?? ALIASES[key]) as FieldId | undefined;
-  if (id) bag[id] = value;
-}
-
-function isSubmittedKey(rawKey: string, rawValue: string): boolean {
-  return (
-    rawKey.trim().toLowerCase() === 'submitted' &&
-    /^(true|yes|1)$/i.test(rawValue.trim().replace(/^["']|["']$/g, ''))
+  set('api_base_url', environment?.base_url);
+  set('auth_method', environment?.auth_method);
+  set(
+    'sandbox_access',
+    sandbox
+      ? // Credentials never travel through this conversation, so the honest
+        // value is whatever the vendor told us about reaching the sandbox.
+        sandbox.notes?.trim() ||
+          sandbox.technical_contact?.trim() ||
+          sandbox.docs_url?.trim() ||
+          'Sandbox environment registered'
+      : undefined,
   );
+
+  return {
+    captured,
+    submitted: state.status === 'submitted',
+    reference: state.reference ?? previous?.reference,
+    vendorId: state.vendor?.vendor_id ?? previous?.vendorId,
+  };
 }
 
-export function mergeRecord(prev: SubmissionRecord, reply: ParsedReply): SubmissionRecord {
-  if (!reply.captured.length && !reply.submitted) return prev;
-  const captured = { ...prev.captured };
-  for (const { field, value } of reply.captured) captured[field.id] = value;
-  return { captured, submitted: prev.submitted || reply.submitted };
+/**
+ * What this turn added, as the difference between two reads of the application.
+ * Returned in FIELDS order so the card reads in the order the panel lists.
+ */
+export function capturedSince(
+  before: SubmissionRecord,
+  after: SubmissionRecord,
+): Array<{ field: Field; value: string }> {
+  return FIELDS.filter((f) => {
+    const value = after.captured[f.id];
+    return Boolean(value) && value !== before.captured[f.id];
+  }).map((field) => ({ field, value: after.captured[field.id] as string }));
 }
+
+/* -------------------------------------------------------------- progress, io */
 
 export interface Progress {
   /** 1-based index into STAGES. */

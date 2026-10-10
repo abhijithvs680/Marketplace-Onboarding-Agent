@@ -1,11 +1,14 @@
 /**
- * The session id is the agent's `thread_id`. The Agent Node has memory = "true",
- * so the whole transcript lives server-side keyed by this value — which means it
+ * The session id is the agent's `thread_id` and the key every Part B workflow
+ * filters VendorOnboardingSessions by. The Agent Node has memory = "true", so
+ * the whole transcript lives server-side keyed by this value — which means it
  * must survive a reload, and starting a genuinely new application means minting
  * a new one.
  *
- * The transcript and the submission record kept here are the UI's copy; the
- * agent's own memory is the source of truth for what it knows.
+ * The transcript kept here is the UI's copy of the conversation. The submission
+ * record is a cache of the last `GetApplication` read, so a reload shows the
+ * panel filled in before the first round trip comes back; the platform is the
+ * source of truth and overwrites it.
  */
 
 import { EMPTY_RECORD, type Field, type SubmissionRecord } from './submission';
@@ -56,7 +59,12 @@ export function loadRecord(): SubmissionRecord {
   if (!parsed || typeof parsed !== 'object' || typeof parsed.captured !== 'object') {
     return EMPTY_RECORD;
   }
-  return { captured: parsed.captured ?? {}, submitted: Boolean(parsed.submitted) };
+  return {
+    captured: parsed.captured ?? {},
+    submitted: Boolean(parsed.submitted),
+    reference: parsed.reference,
+    vendorId: parsed.vendorId,
+  };
 }
 
 export function saveRecord(record: SubmissionRecord): void {

@@ -10,7 +10,8 @@ import { CheckIcon, DownloadIcon } from './Icons';
 
 interface Props {
   record: SubmissionRecord;
-  sessionId: string;
+  /** The platform's reference for this application, from GetApplication. */
+  reference: string;
   onBack: () => void;
 }
 
@@ -29,9 +30,8 @@ const NEXT = [
   },
 ];
 
-export function Review({ record, sessionId, onBack }: Props) {
+export function Review({ record, reference, onBack }: Props) {
   const complete = isComplete(record);
-  const reference = sessionId.slice(0, 8).toUpperCase();
 
   return (
     <main className="page">

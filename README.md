@@ -6,9 +6,15 @@ rather than a chat box. Built to the design canvas: a welcome screen, the
 onboarding console (stage rail + conversation + live submission panel), and a
 review page.
 
+The app talks to three workflows: the agent, which answers in prose, and two
+small ones that open an application and read its state back
+(`MarketPlaceOnboard_StartSession`, `MarketPlaceOnboard_GetApplication`). The
+agent writes through its own tools; the client never parses state out of a
+reply.
+
 ## The contract this app is built against
 
-The workflow is two blocks:
+The agent workflow is two blocks:
 
 ```
 Entry (genericpost, 4202, auth_required = "0")  ──▶  Agent Node (4211, gemini, stream = false)
@@ -35,6 +41,39 @@ Entry (genericpost, 4202, auth_required = "0")  ──▶  Agent Node (4211, gem
   [{ "response": "…", "provider": "gemini", "model": "gemini-3.5-flash",
      "workflow_log_id": 81066764 }]
   ```
+
+### The other two workflows
+
+Both take `{ "session_id": "…" }`, both end in a `customoutput` block with
+`outputDataType = json`, and both have `auth_required = "0"` on the entry block,
+so the browser calls them exactly like the agent. Because the last block that
+ran is a `customoutput`, the trigger returns its `outData` verbatim — a bare
+object, not the engine's row array. `callWorkflow` accepts either shape.
+
+`MarketPlaceOnboard_StartSession` answers:
+
+```json
+{ "ok": true, "reference": "VZ-00042" }
+```
+
+`MarketPlaceOnboard_GetApplication` answers the state of one application, and
+answers `{"ok": true, "status": "new"}` with HTTP 200 for a session it has never
+seen — the client calls it before the first turn:
+
+```json
+{
+  "ok": true,
+  "reference": "VZ-00042",
+  "status": "draft",
+  "stage": "product",
+  "vendor": { "vendor_id": "…", "legal_entity": "…", "primary_contact": "…" },
+  "features": [{ "feature": "Intraoral scanning", "description": "" }],
+  "api": [{ "environment": "sandbox", "base_url": "…", "auth_method": "…" }]
+}
+```
+
+Until their short codes are set (see the table below) the client skips both
+calls and the app runs against the agent alone.
 
 Four details that bite, all handled in [src/vizru.ts](src/vizru.ts):
 
@@ -70,37 +109,32 @@ Opens on <http://localhost:3000> — keep that port.
 |---|---|
 | `VITE_VIZRU_BASE_URL` | Platform origin the **browser** calls. Currently `https://innov-dev.beta.injomo.com/`, which is where this workflow lives. Set it empty to route through the dev proxy instead. |
 | `VIZRU_PLATFORM_URL` | Target of the **dev proxy** (`/workflow.trigger/*`). Only used when `VITE_VIZRU_BASE_URL` is empty; useful against a local stack with a self-signed cert. |
-| `VITE_VIZRU_WORKFLOW` | Workflow short code. |
+| `VITE_VIZRU_WORKFLOW` | The agent's short code. |
+| `VITE_VIZRU_WORKFLOW_START` | `MarketPlaceOnboard_StartSession`. Empty means no reference is minted; the app still runs. |
+| `VITE_VIZRU_WORKFLOW_GET` | `MarketPlaceOnboard_GetApplication`. Empty means the submission panel stays on "Needed". |
 | `VITE_VIZRU_TIMEOUT_MS` | Client ceiling for one turn (default 180 000). The Agent Node allows 120 s per provider call and up to 100 tool round trips. |
 
-## Turning the submission panel on
+## Where the submission panel gets its state
 
-The stage rail and the "Your submission" checklist read a record the **agent**
-reports. The workflow returns prose only, so until the agent says what it
-captured every field honestly reads "Needed".
+From the platform, not from the prose. After every agent turn — and once on
+load — the client calls `GetApplication` and maps the answer onto the six
+fields in [src/submission.ts](src/submission.ts). The difference between the
+previous read and the new one is what the conversation shows as the "Added to
+your submission" card, so the checklist reflects what was actually stored
+rather than what a reply claimed.
 
-To light it up, add this to the Agent Node's `system_prompt`:
+Two consequences worth knowing:
 
-```
-When you have confirmed a value, end your reply with this block:
-[[vizru]]
-legal_entity: <registered company name>
-primary_contact: <name or role>
-feature_summary: <one line>
-api_base_url: <url>
-auth_method: <scheme>
-sandbox_access: <what you were told>
-submitted: true
-[[/vizru]]
-Include only the lines you confirmed in that reply. Never mention the block.
-```
+* A read that fails never breaks the conversation. The agent's reply still
+  renders; the detail goes to `console.warn`.
+* With `VITE_VIZRU_WORKFLOW_GET` unset, every field reads "Needed", which is
+  honest — the client has not been told otherwise.
 
-The format is deliberately **brace-free**. The workflow engine interpolates
-`{…}` inside `system_prompt` and deletes anything it cannot resolve, so a JSON
-example there would reach the model mangled. The client strips the block before
-displaying the reply and renders the values as the "Added to your submission"
-card. Aliases (`company_name`, `api_url`, `auth`, …) are accepted — see
-[src/submission.ts](src/submission.ts).
+Nothing in the client parses the agent's text, and the Agent Node's
+`system_prompt` must not ask it to emit a marker block. Structured data travels
+as tool parameters: the engine interpolates `{…}` inside `system_prompt` and
+deletes whatever it cannot resolve, so a JSON example there reaches the model
+mangled.
 
 ## Known server-side problem
 
@@ -115,15 +149,27 @@ Internal Server Error File: …/sys/workflow/block/SpreadsheetOperationsBlock.ph
 The agent still answers, but the child workflow
 `marketplaceonboardsaveinformation6aca3328c7c44` is **not saving the vendor** —
 its spreadsheet block has no valid `ssid`. Fix that in the workflow; nothing in
-this client can.
+this client can. Until it is fixed, `GetApplication` has nothing to read and the
+panel stays on "Needed". Parts A and B of [PLAN.md](PLAN.md) cover the repair:
+select every sheet by `ss_short_code` with `dynamic_flag: "true"`, never by a
+Mongo `ssid`.
 
 ## Layout
+
+The console is a fixed-height shell: `.app` is `100dvh` with `overflow: hidden`,
+and the regions inside scroll themselves. At 1280×800 the whole interface fits
+without a page scroll — only the message thread scrolls, inside its card — and
+below 860px the shell reverts to natural height and the page scrolls as a phone
+expects. `min-height: 0` on every flex ancestor is what makes the inner
+`overflow-y: auto` work; without it the child refuses to shrink.
+
+## Files
 
 | File | Role |
 |---|---|
 | [src/vizru.ts](src/vizru.ts) | The platform contract: one `POST`, response salvage, error mapping. |
-| [src/submission.ts](src/submission.ts) | Stages, fields, the marker protocol, progress, the text summary. |
-| [src/session.ts](src/session.ts) | `session_id` (= `thread_id`), transcript, record — all in `localStorage`. |
+| [src/submission.ts](src/submission.ts) | Stages, fields, the mapping from `GetApplication`, progress, the text summary. |
+| [src/session.ts](src/session.ts) | `session_id` (= `thread_id`), transcript, the cached record — all in `localStorage`. |
 | [src/App.tsx](src/App.tsx) | Welcome / console / review, send loop, abort handling. |
 | [src/components/](src/components) | Header, stage bar, conversation, composer, submission panel, review, markdown. |
 | [src/styles.css](src/styles.css) | Design tokens: IBM Plex, deep teal `#0D5B52`, light corporate surfaces. |

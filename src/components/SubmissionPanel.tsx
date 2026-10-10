@@ -15,8 +15,7 @@ export function SubmissionPanel({ record, progress, onReview, onSaveForLater }: 
         <div className="card-head">
           <h2>Your submission</h2>
           <p>
-            {progress.done} of {progress.total} answers captured, updated as the conversation
-            progresses.
+            {progress.done} of {progress.total} captured, updated as you go.
           </p>
         </div>
         <dl className="fields">
@@ -25,11 +24,13 @@ export function SubmissionPanel({ record, progress, onReview, onSaveForLater }: 
             const current = !value && field.stage === progress.stage.id;
             return (
               <div key={field.id} className={`field${value ? ' field--done' : ''}`}>
-                <dt>
+                {/* Label and status only, as the design canvas has it. The value
+                    itself shows on the turn that captured it and on the review
+                    page, so the checklist stays a checklist. */}
+                <dt title={value ?? undefined}>
                   <span className={current ? 'field-label field-label--current' : 'field-label'}>
                     {field.label}
                   </span>
-                  {value ? <span className="field-value">{value}</span> : null}
                 </dt>
                 <dd>
                   <span
@@ -51,10 +52,7 @@ export function SubmissionPanel({ record, progress, onReview, onSaveForLater }: 
 
       <section className="card card--pad">
         <h2>Pause and come back</h2>
-        <p className="muted">
-          Your answers are held against this application. Reopen this page on the same browser to
-          continue where you left off.
-        </p>
+        <p className="muted">Reopen this page any time to continue.</p>
         <button type="button" className="btn btn--quiet btn--block" onClick={onSaveForLater}>
           Save and finish later
         </button>
@@ -63,8 +61,8 @@ export function SubmissionPanel({ record, progress, onReview, onSaveForLater }: 
       <section className="card card--pad">
         <h2>Need a person?</h2>
         <p className="muted">
-          Partner support answers within one working day —{' '}
-          <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+          Partner support answers within one working day:{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
         </p>
       </section>
     </aside>

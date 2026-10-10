@@ -1,5 +1,5 @@
 import { COMPANY, PRODUCT, SUPPORT_EMAIL } from '../brand';
-import { MarkIcon } from './Icons';
+import { MarkIcon, PersonIcon } from './Icons';
 
 interface Props {
   /** The vendor, once the agent has reported it. */
@@ -24,7 +24,8 @@ export function AppHeader({ vendor }: Props) {
         </a>
         <span className="account">
           <span className="avatar" aria-hidden="true">
-            {initials(vendor)}
+            {/* No vendor yet means no initials — a neutral mark, never a dash. */}
+            {vendor ? initials(vendor) : <PersonIcon />}
           </span>
           <span className="account-name">{vendor ?? 'New application'}</span>
         </span>
@@ -33,8 +34,7 @@ export function AppHeader({ vendor }: Props) {
   );
 }
 
-function initials(vendor?: string): string {
-  if (!vendor) return '–';
+function initials(vendor: string): string | null {
   const words = vendor.split(/\s+/).filter(Boolean);
-  return (words[0]?.[0] ?? '').concat(words[1]?.[0] ?? '').toUpperCase() || '–';
+  return (words[0]?.[0] ?? '').concat(words[1]?.[0] ?? '').toUpperCase() || null;
 }

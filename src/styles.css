@@ -23,6 +23,13 @@
   --danger-ink: #8f2f2a;
   --danger-line: #e8cfcc;
   --radius: 12px;
+  /* One horizontal scale for everything inside a card: the card head, the
+     messages, the composer and the field list all share this left edge. */
+  --card-x: 24px;
+  /* The speaker avatar and the gap beside it, so anything that has to clear it
+     can be derived rather than hardcoded. */
+  --speaker-size: 32px;
+  --turn-gap: 13px;
   --sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: light;
@@ -78,7 +85,10 @@ a:hover {
 }
 
 .app {
-  min-height: 100vh;
+  /* A fixed-height shell. Nothing scrolls the page; the regions inside scroll
+     themselves, which is what keeps the console to one scrollbar. */
+  height: 100dvh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
@@ -181,7 +191,8 @@ a:hover {
   background: var(--surface);
   border-bottom: 1px solid var(--line);
   padding: 0 32px;
-  min-height: 64px;
+  min-height: 60px;
+  flex: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -193,7 +204,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 0;
+  padding: 10px 0;
 }
 
 .brand-mark {
@@ -229,7 +240,7 @@ a:hover {
   display: flex;
   align-items: center;
   gap: 20px;
-  padding: 12px 0;
+  padding: 10px 0;
 }
 
 .link {
@@ -272,16 +283,20 @@ a:hover {
 .stagebar {
   background: var(--surface);
   border-bottom: 1px solid var(--line);
-  padding: 20px 32px;
+  padding: 10px 32px;
+  flex: none;
 }
 
 .stagebar-inner {
   max-width: 1400px;
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 12px;
+  /* Four equal stages plus a trailing column for the counter. A grid keeps the
+     counter on the rail's line at every width instead of wrapping below it
+     somewhere between 860 and 1100px. */
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  align-items: center;
+  gap: 12px 14px;
 }
 
 .stagebar-compact {
@@ -289,15 +304,15 @@ a:hover {
 }
 
 .stage {
-  flex: 1 1 200px;
-  min-width: 190px;
+  min-width: 0;
   display: flex;
-  gap: 11px;
+  align-items: center;
+  gap: 10px;
 }
 
 .stage-dot {
-  width: 24px;
-  height: 24px;
+  width: 23px;
+  height: 23px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -323,12 +338,16 @@ a:hover {
 
 .stage-text {
   display: block;
+  min-width: 0;
 }
 
 .stage-label {
   display: block;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stage--current .stage-label {
@@ -354,7 +373,6 @@ a:hover {
   font-family: var(--mono);
   font-size: 12px;
   color: var(--muted);
-  padding-top: 4px;
   white-space: nowrap;
 }
 
@@ -369,11 +387,31 @@ a:hover {
   background: var(--accent);
 }
 
+@media (max-width: 1100px) {
+  .stage-state {
+    display: none;
+  }
+
+  .stage-label {
+    font-size: 13px;
+  }
+}
+
 /* ---------- page frame ---------- */
 
 .page {
   flex: 1;
-  padding: 26px 32px 44px;
+  /* min-height: 0 is what lets a flex child shrink below its content and so
+     makes the overflow below actually take effect. */
+  min-height: 0;
+  padding: 18px 32px 20px;
+  overflow-y: auto;
+}
+
+/* The console sizes itself to the shell; only the thread and the side column
+   scroll, each inside its own card. */
+.page--console {
+  overflow: hidden;
 }
 
 .page-inner {
@@ -381,11 +419,21 @@ a:hover {
   margin: 0 auto;
 }
 
+.page--console .page-inner {
+  height: 100%;
+  min-height: 0;
+}
+
 .console {
   display: flex;
-  flex-wrap: wrap;
+  /* Never wrap while the shell is a fixed height: a wrapped side column would
+     be twice the available height and get clipped. The columns shrink instead,
+     and below 860px the layout switches to the stacked phone flow. */
+  flex-wrap: nowrap;
   gap: 24px;
-  align-items: flex-start;
+  align-items: stretch;
+  height: 100%;
+  min-height: 0;
 }
 
 .card {
@@ -395,17 +443,23 @@ a:hover {
 }
 
 .card--pad {
-  padding: 20px 22px;
+  padding: 13px 16px;
+}
+
+/* A paragraph in a padded card is spaced by the heading's margin and the
+   button's, not by the browser's default 1em above and below. */
+.card--pad p {
+  margin: 0;
 }
 
 .card--pad h2 {
-  margin: 0 0 6px;
-  font-size: 15px;
+  margin: 0 0 3px;
+  font-size: 14.5px;
   font-weight: 600;
 }
 
 .card-head {
-  padding: 20px 24px 16px;
+  padding: 16px var(--card-x) 13px;
   border-bottom: 1px solid var(--line-soft);
 }
 
@@ -426,19 +480,19 @@ a:hover {
 .card-head h2,
 .card-head h3 {
   margin: 0;
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 600;
 }
 
 .card-head p {
-  margin: 5px 0 0;
-  font-size: 13.5px;
+  margin: 4px 0 0;
+  font-size: 12.5px;
   color: var(--muted);
   max-width: 58ch;
 }
 
 .card-foot {
-  padding: 0 20px 18px;
+  padding: 0 var(--card-x) 12px;
 }
 
 .saved {
@@ -457,6 +511,8 @@ a:hover {
 .thread-card {
   flex: 999 1 560px;
   min-width: 0;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
 }
@@ -464,9 +520,13 @@ a:hover {
 /* ---------- conversation ---------- */
 
 .thread {
-  padding: 24px;
-  max-height: 58vh;
+  padding: 20px var(--card-x);
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  /* Reserve the scrollbar's width so the messages keep the same left and right
+     edge whether or not the thread is scrollable. */
+  scrollbar-gutter: stable;
 }
 
 .turns {
@@ -480,7 +540,7 @@ a:hover {
 
 .turn {
   display: flex;
-  gap: 13px;
+  gap: var(--turn-gap);
 }
 
 .turn--user {
@@ -511,8 +571,8 @@ a:hover {
 }
 
 .speaker {
-  width: 32px;
-  height: 32px;
+  width: var(--speaker-size);
+  height: var(--speaker-size);
   border-radius: 8px;
   background: var(--accent-soft);
   color: var(--accent);
@@ -642,15 +702,16 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 20px 0 0 45px;
+  /* Lines up with the turn body, past the speaker avatar. */
+  margin: 18px 0 0 calc(var(--speaker-size) + var(--turn-gap));
 }
 
 /* ---------- composer ---------- */
 
 .composer {
   border-top: 1px solid var(--line-soft);
-  padding: 18px 24px 22px;
-  margin-top: auto;
+  padding: 16px var(--card-x) 18px;
+  flex: none;
 }
 
 .composer-label {
@@ -703,23 +764,35 @@ a:hover {
 
 .side {
   flex: 1 1 320px;
-  min-width: 300px;
+  min-width: 272px;
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 9px;
+  /* A short window degrades to one internal scrollbar here, never a page one. */
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* The review page's side column sits in a scrolling page, so it keeps its
+   natural height. */
+.review .side {
+  height: auto;
+  overflow: visible;
 }
 
 .fields {
   margin: 0;
-  padding: 6px 20px 14px;
+  padding: 4px var(--card-x) 10px;
 }
 
 .field {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 11px 0;
+  padding: 6px 0;
   border-bottom: 1px solid #f1f3f5;
 }
 
@@ -738,6 +811,7 @@ a:hover {
 .field-label {
   display: block;
   font-size: 13.5px;
+  line-height: 1.4;
   color: var(--muted);
 }
 
@@ -748,14 +822,6 @@ a:hover {
 .field-label--current {
   color: var(--ink);
   font-weight: 600;
-}
-
-.field-value {
-  display: block;
-  font-size: 12.5px;
-  color: var(--muted);
-  margin-top: 3px;
-  overflow-wrap: anywhere;
 }
 
 .status {
@@ -780,7 +846,7 @@ a:hover {
 }
 
 .card--pad .btn {
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 .card--pad.stack .btn {
@@ -798,15 +864,15 @@ a:hover {
 .welcome {
   display: flex;
   flex-direction: column;
-  gap: 44px;
-  padding-top: 26px;
+  gap: 26px;
+  padding-top: 6px;
   max-width: 1180px;
 }
 
 .welcome-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 48px;
+  gap: 40px;
   align-items: flex-start;
 }
 
@@ -816,7 +882,7 @@ a:hover {
 }
 
 .eyebrow {
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   font-family: var(--mono);
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -826,16 +892,16 @@ a:hover {
 
 .welcome-copy h1 {
   margin: 0;
-  font-size: 44px;
-  line-height: 1.12;
+  font-size: 38px;
+  line-height: 1.14;
   font-weight: 600;
   letter-spacing: -0.025em;
   max-width: 17ch;
 }
 
 .lede {
-  margin: 20px 0 0;
-  font-size: 16.5px;
+  margin: 16px 0 0;
+  font-size: 16px;
   line-height: 1.65;
   color: var(--ink-2);
   max-width: 58ch;
@@ -845,17 +911,17 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 24px;
 }
 
 .welcome-note {
-  margin-top: 18px;
+  margin-top: 14px;
 }
 
 .welcome-needs {
   flex: 1 1 340px;
   min-width: 320px;
-  padding: 26px;
+  padding: 22px;
 }
 
 .welcome-needs h2 {
@@ -864,11 +930,11 @@ a:hover {
 
 .ticks {
   list-style: none;
-  margin: 18px 0 0;
+  margin: 14px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 11px;
 }
 
 .ticks li {
@@ -893,13 +959,13 @@ a:hover {
 }
 
 .welcome-secure {
-  margin-top: 20px;
-  padding-top: 18px;
+  margin-top: 16px;
+  padding-top: 14px;
   border-top: 1px solid var(--line-soft);
 }
 
 .section-head {
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   font-size: 15px;
   font-weight: 600;
   color: var(--muted);
@@ -911,11 +977,11 @@ a:hover {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 20px;
+  gap: 16px;
 }
 
 .steps li {
-  padding: 24px;
+  padding: 20px;
 }
 
 .step-n {
@@ -926,8 +992,8 @@ a:hover {
 }
 
 .steps h3 {
-  margin: 10px 0 8px;
-  font-size: 17px;
+  margin: 8px 0 6px;
+  font-size: 16.5px;
   font-weight: 600;
 }
 
@@ -943,9 +1009,8 @@ a:hover {
 .review {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
   max-width: 1180px;
-  padding-top: 10px;
 }
 
 .banner {
@@ -953,7 +1018,7 @@ a:hover {
   border: 1px solid var(--line);
   border-left: 4px solid var(--field-line);
   border-radius: var(--radius);
-  padding: 24px 26px;
+  padding: 18px 22px;
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -1035,15 +1100,15 @@ a:hover {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .review-fields {
   margin: 0;
-  padding: 18px 22px;
+  padding: 14px var(--card-x);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px 32px;
+  gap: 14px 32px;
 }
 
 .review-fields dt {
@@ -1066,11 +1131,11 @@ a:hover {
 
 .timeline {
   list-style: none;
-  margin: 12px 0 0;
+  margin: 10px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .timeline li {
@@ -1125,7 +1190,23 @@ a:hover {
 .footer {
   border-top: 1px solid var(--line);
   background: var(--surface);
-  padding: 20px 32px;
+  padding: 16px 32px;
+  flex: none;
+}
+
+/* On the console every pixel below the fold costs the conversation, so the
+   footer keeps its links and loses its height. */
+.footer--slim {
+  padding: 7px 32px;
+}
+
+.footer--slim .muted,
+.footer--slim .footer-links a {
+  font-size: 12px;
+}
+
+.footer--slim .footer-inner {
+  gap: 8px 18px;
 }
 
 .footer-inner {
@@ -1170,15 +1251,51 @@ a:hover {
 /* ---------- narrow ---------- */
 
 @media (max-width: 860px) {
+  /* The phone layout stacks, so the page itself scrolls and every region keeps
+     its natural height — one scrollbar again, just a different one. */
+  .app {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .page,
+  .page--console {
+    overflow: visible;
+    padding: 16px 16px 28px;
+  }
+
+  .page--console .page-inner,
+  .console,
+  .thread-card,
+  .side {
+    height: auto;
+    min-height: 0;
+  }
+
+  .console {
+    flex-wrap: wrap;
+  }
+
+  .side {
+    min-width: 0;
+  }
+
+  .side {
+    overflow: visible;
+  }
+
   .topbar,
   .stagebar,
-  .footer {
+  .footer,
+  .footer--slim {
     padding-left: 16px;
     padding-right: 16px;
   }
 
-  .page {
-    padding: 16px 16px 32px;
+  .stagebar {
+    padding-top: 14px;
+    padding-bottom: 14px;
   }
 
   .stagebar-inner {
@@ -1216,19 +1333,21 @@ a:hover {
 
   .thread {
     padding: 18px 16px;
-    max-height: none;
+    flex: none;
+    overflow-y: visible;
   }
 
-  .composer {
-    padding: 16px;
+  /* One scale again at this width, 16px instead of 24. */
+  .composer,
+  .card-head,
+  .card-foot,
+  .fields,
+  .review-fields {
+    --card-x: 16px;
   }
 
-  .card-head {
-    padding: 18px 16px 14px;
-  }
-
-  .fields {
-    padding: 4px 16px 12px;
+  .card-foot {
+    padding-bottom: 16px;
   }
 
   .suggestions {
