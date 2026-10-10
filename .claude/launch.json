@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "onboarding-agent",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["--prefix", "marketplaceonboardagent6aca3281a3e51", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}
