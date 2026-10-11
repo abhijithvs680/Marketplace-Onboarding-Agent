@@ -61,7 +61,7 @@ export function SubmissionPanel({ record, progress, onReview, onSaveForLater }: 
       <section className="card card--pad">
         <h2>Need a person?</h2>
         <p className="muted">
-          Partner support answers within one working day:{' '}
+          Vendor support answers within one working day:{' '}
           <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>
         </p>
       </section>

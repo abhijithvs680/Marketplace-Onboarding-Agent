@@ -8,27 +8,28 @@ interface Props {
 }
 
 const NEEDED = [
-  'Your registered company name and trading address',
-  'A short summary of what your product does for a practice',
-  'Your API base URL and the authentication method it uses',
-  'A technical contact we can reach during integration',
+  'Registered company details and your primary contact',
+  'What the product does for a dental practice, and its category',
+  'Its regulatory position and whether it handles patient data',
+  'Commercial terms: pricing, contract length and support hours',
+  'API base URL, authentication method and a technical contact',
 ];
 
 const STEPS = [
   {
     n: '01',
-    title: 'Company profile',
-    body: 'Who you are, where you trade, and who we should speak to about commercial and technical matters.',
+    title: 'Company & product',
+    body: 'Your registered entity and contact, then the product itself: what it is, its category, and what it does for a practice.',
   },
   {
     n: '02',
-    title: 'Product & features',
-    body: 'The capabilities your application exposes to a dental practice, and the problems each one solves.',
+    title: 'Regulatory & commercial',
+    body: 'Whether the product is a regulated medical device, how it handles patient data, and the terms a practice would buy on.',
   },
   {
     n: '03',
-    title: 'API & integration',
-    body: 'How our platform talks to yours: endpoints, authentication, and the environments we can test against.',
+    title: 'Integration & review',
+    body: 'How our platform talks to yours, then a summary you confirm before it goes to the marketplace team.',
   },
 ];
 
@@ -38,13 +39,13 @@ export function Welcome({ hasDraft, onStart, onStartNew }: Props) {
       <div className="page-inner welcome">
         <div className="welcome-top">
           <div className="welcome-copy">
-            <p className="eyebrow">Supplier application</p>
-            <h1>List your product on the marketplace</h1>
+            <p className="eyebrow">Vendor application</p>
+            <h1>List your product on the dental marketplace</h1>
             <p className="lede">
-              An onboarding specialist will take you through the application in a single
-              conversation — company details, what your product does, and how {COMPANY} will
-              integrate with your platform. Answer in your own words; it will ask for anything
-              still missing and record each answer as you go.
+              A {COMPANY} onboarding manager will take you through the application in a single
+              conversation: your company, the product and its regulatory position, the commercial
+              terms, and how the two platforms integrate. Answer in your own words — each answer
+              is recorded against your application as you give it.
             </p>
 
             <div className="welcome-actions">
@@ -60,7 +61,7 @@ export function Welcome({ hasDraft, onStart, onStartNew }: Props) {
             </div>
 
             <p className="muted welcome-note">
-              Nothing is published until our commercial team reviews it with you.
+              Nothing is listed until the marketplace team has reviewed it with you.
             </p>
           </div>
 
@@ -78,8 +79,8 @@ export function Welcome({ hasDraft, onStart, onStartNew }: Props) {
               ))}
             </ul>
             <p className="muted welcome-secure">
-              Sandbox credentials are requested later, over a secure channel — never in this
-              conversation.
+              Credentials are never requested in this conversation. Sandbox access is arranged
+              later, over a secure channel.
             </p>
           </aside>
         </div>

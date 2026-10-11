@@ -37,7 +37,7 @@ export const Conversation = forwardRef<HTMLDivElement, Props>(function Conversat
                 <SpecialistIcon />
               </span>
               <div className="turn-body">
-                <p className="turn-who">Onboarding specialist</p>
+                <p className="turn-who">Onboarding manager</p>
                 {turn.text ? (
                   <div className="bubble bubble--agent">
                     <RichText text={turn.text} />
@@ -70,7 +70,7 @@ export const Conversation = forwardRef<HTMLDivElement, Props>(function Conversat
               <SpecialistIcon />
             </span>
             <div className="turn-body">
-              <p className="turn-who">Onboarding specialist</p>
+              <p className="turn-who">Onboarding manager</p>
               <div className="bubble bubble--agent thinking">
                 <i />
                 <i />

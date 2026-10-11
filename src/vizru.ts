@@ -207,6 +207,24 @@ export interface ApplicationApi {
 }
 
 /** The documented response of MarketPlaceOnboard_GetApplication. */
+export interface ApplicationIntake {
+  country?: string;
+  website?: string;
+  trading_name?: string;
+  contact_phone?: string;
+  product_name?: string;
+  product_category?: string;
+  regulatory_status?: string;
+  patient_data_handled?: string;
+  pricing_model?: string;
+  list_price?: string;
+  free_trial?: string;
+  contract_term?: string;
+  support_hours?: string;
+  sla_uptime?: string;
+  implementation_support?: string;
+}
+
 export interface ApplicationState {
   ok: boolean;
   /** `new` for a session the platform has never seen. */
@@ -214,6 +232,8 @@ export interface ApplicationState {
   stage?: string;
   reference?: string;
   vendor?: ApplicationVendor;
+  /** The corporate intake answers: legal, product, regulatory, commercial. */
+  intake?: ApplicationIntake;
   features?: ApplicationFeature[];
   api?: ApplicationApi[];
 }
@@ -288,7 +308,9 @@ export async function getApplication(
  * flat and reliable. A nested `vendor` / `features` / `api` is still accepted,
  * for when the workflow grows a real composer.
  */
-function flatten(row: Record<string, unknown>): Pick<ApplicationState, 'vendor' | 'features' | 'api'> {
+function flatten(
+  row: Record<string, unknown>,
+): Pick<ApplicationState, 'vendor' | 'intake' | 'features' | 'api'> {
   const vendor = (asRecord(row.vendor) as ApplicationVendor | undefined) ?? {
     vendor_id: str(row.vendor_id),
     legal_entity: str(row.legal_entity),
@@ -303,8 +325,20 @@ function flatten(row: Record<string, unknown>): Pick<ApplicationState, 'vendor' 
   const baseUrl = str(row.base_url);
   const authMethod = str(row.auth_method);
 
+  const intake: ApplicationIntake = {};
+  for (const key of [
+    'country', 'website', 'trading_name', 'contact_phone',
+    'product_name', 'product_category', 'regulatory_status', 'patient_data_handled',
+    'pricing_model', 'list_price', 'free_trial', 'contract_term',
+    'support_hours', 'sla_uptime', 'implementation_support',
+  ] as const) {
+    const value = str(row[key]);
+    if (value) intake[key] = value;
+  }
+
   return {
     vendor,
+    intake: (asRecord(row.intake) as ApplicationIntake | undefined) ?? intake,
     features: features.length ? features : feature ? [{ feature }] : [],
     api:
       api.length

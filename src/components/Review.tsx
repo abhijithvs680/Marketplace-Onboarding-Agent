@@ -18,15 +18,15 @@ interface Props {
 const NEXT = [
   {
     title: 'Technical validation',
-    body: 'We call your sandbox against the capabilities you listed and come back with anything unclear.',
+    body: 'We call your sandbox against the capabilities you listed and confirm your regulatory position.',
   },
   {
     title: 'Commercial review',
-    body: 'Listing terms, pricing and the supplier agreement, handled by the partnerships team.',
+    body: 'Listing terms, pricing and the vendor agreement, handled by the marketplace team.',
   },
   {
     title: 'Listing goes live',
-    body: 'Your product appears in the marketplace catalogue and practices can request a trial.',
+    body: 'Your product appears in the dental marketplace catalogue and practices can request a trial.',
   },
 ];
 
@@ -45,7 +45,7 @@ export function Review({ record, reference, onBack }: Props) {
               <h1>{record.submitted ? 'Application submitted' : 'Your application so far'}</h1>
               <p>
                 {record.submitted
-                  ? 'Everything you shared has been filed with the partnerships team.'
+                  ? 'Everything you shared has been filed with the dental marketplace team.'
                   : complete
                     ? 'Every answer is in. Tell the specialist you are ready and it will file the application.'
                     : 'A draft, saved against this session. Return to the conversation to fill the gaps.'}
@@ -153,7 +153,7 @@ function downloadSummary(record: SubmissionRecord, reference: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `vizru-partner-application-${shortRef(reference)}.txt`;
+  link.download = `dental-marketplace-application-${shortRef(reference)}.txt`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -161,7 +161,7 @@ function downloadSummary(record: SubmissionRecord, reference: string): void {
 }
 
 function mailtoSummary(record: SubmissionRecord, reference: string): string {
-  const subject = `Vizru partner application ${shortRef(reference)}`;
+  const subject = `Dental marketplace vendor application ${shortRef(reference)}`;
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
     `Reference: ${reference}\n\n${summaryText(record)}`,
   )}`;

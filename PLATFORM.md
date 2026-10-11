@@ -18,6 +18,7 @@ App: **Plug-In Integration**, `lid 3111`, short code
 | `VendorFeaturesV2` | `6acab523701586f2950208c4` | `vendorfeaturesv26acab523c5621` |
 | `VendorApiInfoV2` | `6acab53f3d2759968f006e52` | `vendorapiinfov26acab53fe7a99` |
 | `VendorOnboardingMessages` | `6acb4a8910fd15c7f900cf64` | `vendoronboardingmessages6acb4a8961591` |
+| `VendorIntake` | `6acb4fa1c9d9be519608d71e` | `vendorintake6acb4fa1eb7eb` |
 
 Columns are as PLAN.md Part A specifies.
 
@@ -243,3 +244,34 @@ Two things make that safe:
 `MarketPlaceOnboard_GetMessages` reads it back, aliasing the columns to
 `role` / `message` with `alias_column`. The client hydrates from it on load and
 falls back to its local copy.
+
+
+## The corporate intake, and why it is split across actions
+
+`VendorIntake` holds the wider intake: trading name, country, website, contact
+phone, product name and category, regulatory status, patient-data handling,
+pricing model, list price, trial, contract term, support hours, uptime and
+implementation support. One row per vendor, keyed on `VendorId`.
+
+It is written by **three** separate `create_vendor` actions, not one:
+
+| Action | Writes |
+|---|---|
+| `update_vendor_details` | trading name, country, website, telephone |
+| `update_product_details` | product name, category, regulatory status, patient data |
+| `update_commercial_terms` | pricing, price, trial, term, support hours, uptime, implementation |
+
+That split is not cosmetic. A spreadsheet write block maps a **fixed** column
+list, so a single wide action re-writes every mapped column on every call —
+and the commercial turn blanked the company and product answers that earlier
+turns had saved. Narrow actions each touch only their own columns.
+
+The same rule applies to anything added later: give it its own action rather
+than widening an existing one.
+
+### Fields deliberately not collected
+
+Company number, VAT number, certifications, GDPR role, data residency and
+insurance cover were in the first draft of the intake and were cut as too much
+for now. `VendorOnboardingDetails` (`6acb4eb4cbeac2277702acf3`) is the empty
+sheet from that draft; it is superseded by `VendorIntake` and can be deleted.

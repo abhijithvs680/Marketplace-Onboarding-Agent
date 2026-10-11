@@ -34,7 +34,7 @@ const OPENERS = [
   'Here are our API details — where should I start?',
 ];
 
-const FIRST_MESSAGE = 'Hello — we would like to start a partner application.';
+const FIRST_MESSAGE = 'Hello — we would like to list our product on the dental marketplace.';
 
 export default function App() {
   const [sessionId, setSessionId] = useState(loadSessionId);
@@ -264,8 +264,8 @@ export default function App() {
               <div>
                 <h1>Onboarding session</h1>
                 <p>
-                  A specialist walks you through each requirement and records your answers as you
-                  go. You can leave and return at any point.
+                  An onboarding manager works through each requirement and records your answers
+                  as you give them. You can leave and return at any point.
                 </p>
               </div>
               <span className="saved">Saved</span>
@@ -324,13 +324,13 @@ function Footer({ slim = false }: { slim?: boolean }) {
     <footer className={slim ? 'footer footer--slim' : 'footer'}>
       <div className="footer-inner">
         <p className="muted">
-          © {new Date().getFullYear()} {COMPANY}. Supplier applications are handled by the
-          partnerships team.
+          © {new Date().getFullYear()} {COMPANY}. Vendor applications are reviewed by the dental
+          marketplace team.
         </p>
         <nav className="footer-links">
-          <a href={`mailto:${SUPPORT_EMAIL}`}>Partner support</a>
+          <a href={`mailto:${SUPPORT_EMAIL}`}>Vendor support</a>
           <a href="#privacy">Privacy</a>
-          <a href="#terms">Supplier terms</a>
+          <a href="#terms">Vendor terms</a>
         </nav>
       </div>
     </footer>

@@ -16,7 +16,7 @@
 
 import type { ApplicationState } from './vizru';
 
-export type StageId = 'company' | 'product' | 'integration' | 'review';
+export type StageId = 'company' | 'product' | 'regulatory' | 'commercial' | 'integration' | 'review';
 
 export interface Stage {
   id: StageId;
@@ -24,19 +24,28 @@ export interface Stage {
 }
 
 export const STAGES: Stage[] = [
-  { id: 'company', label: 'Company profile' },
-  { id: 'product', label: 'Product & features' },
-  { id: 'integration', label: 'API & integration' },
+  { id: 'company', label: 'Company & contact' },
+  { id: 'product', label: 'Product & capabilities' },
+  { id: 'regulatory', label: 'Regulatory & patient data' },
+  { id: 'commercial', label: 'Commercial terms' },
+  { id: 'integration', label: 'Integration' },
   { id: 'review', label: 'Review & submit' },
 ];
 
 export type FieldId =
   | 'legal_entity'
   | 'primary_contact'
+  | 'country'
+  | 'product_name'
+  | 'product_category'
   | 'feature_summary'
+  | 'regulatory_status'
+  | 'patient_data'
+  | 'pricing_model'
+  | 'contract_term'
+  | 'support_hours'
   | 'api_base_url'
-  | 'auth_method'
-  | 'sandbox_access';
+  | 'auth_method';
 
 export interface Field {
   id: FieldId;
@@ -45,12 +54,19 @@ export interface Field {
 }
 
 export const FIELDS: Field[] = [
-  { id: 'legal_entity', label: 'Legal entity name', stage: 'company' },
+  { id: 'legal_entity', label: 'Legal entity', stage: 'company' },
   { id: 'primary_contact', label: 'Primary contact', stage: 'company' },
-  { id: 'feature_summary', label: 'Feature summary', stage: 'product' },
+  { id: 'country', label: 'Country of registration', stage: 'company' },
+  { id: 'product_name', label: 'Product name', stage: 'product' },
+  { id: 'product_category', label: 'Product category', stage: 'product' },
+  { id: 'feature_summary', label: 'Capabilities', stage: 'product' },
+  { id: 'regulatory_status', label: 'Regulatory status', stage: 'regulatory' },
+  { id: 'patient_data', label: 'Patient data handling', stage: 'regulatory' },
+  { id: 'pricing_model', label: 'Pricing model', stage: 'commercial' },
+  { id: 'contract_term', label: 'Contract term', stage: 'commercial' },
+  { id: 'support_hours', label: 'Support hours', stage: 'commercial' },
   { id: 'api_base_url', label: 'API base URL', stage: 'integration' },
   { id: 'auth_method', label: 'Authentication method', stage: 'integration' },
-  { id: 'sandbox_access', label: 'Sandbox access', stage: 'integration' },
 ];
 
 export type Captured = Partial<Record<FieldId, string>>;
@@ -84,6 +100,14 @@ export function recordOf(state: ApplicationState, previous?: SubmissionRecord): 
 
   set('legal_entity', state.vendor?.legal_entity);
   set('primary_contact', state.vendor?.primary_contact);
+  set('country', state.intake?.country);
+  set('product_name', state.intake?.product_name);
+  set('product_category', state.intake?.product_category);
+  set('regulatory_status', state.intake?.regulatory_status);
+  set('patient_data', state.intake?.patient_data_handled);
+  set('pricing_model', state.intake?.pricing_model);
+  set('contract_term', state.intake?.contract_term);
+  set('support_hours', state.intake?.support_hours);
 
   const features = (state.features ?? [])
     .map((f) => f.feature?.trim())
@@ -98,17 +122,6 @@ export function recordOf(state: ApplicationState, previous?: SubmissionRecord): 
 
   set('api_base_url', environment?.base_url);
   set('auth_method', environment?.auth_method);
-  set(
-    'sandbox_access',
-    sandbox
-      ? // Credentials never travel through this conversation, so the honest
-        // value is whatever the vendor told us about reaching the sandbox.
-        sandbox.notes?.trim() ||
-          sandbox.technical_contact?.trim() ||
-          sandbox.docs_url?.trim() ||
-          'Sandbox environment registered'
-      : undefined,
-  );
 
   return {
     captured,
@@ -150,6 +163,8 @@ export function progressOf(record: SubmissionRecord): Progress {
   const stageDone: Record<StageId, boolean> = {
     company: complete('company'),
     product: complete('product'),
+    regulatory: complete('regulatory'),
+    commercial: complete('commercial'),
     integration: complete('integration'),
     review: record.submitted,
   };
@@ -175,7 +190,7 @@ export function isComplete(record: SubmissionRecord): boolean {
 
 /** Plain-text copy of the application, for download and for a mailto body. */
 export function summaryText(record: SubmissionRecord): string {
-  const lines = ['Vizru Partner Onboarding — application summary', ''];
+  const lines = ['Dental Marketplace — vendor application summary', ''];
   for (const stage of STAGES) {
     const fields = FIELDS.filter((f) => f.stage === stage.id);
     if (!fields.length) continue;

@@ -22,7 +22,7 @@ export function AppHeader({ vendor, onNewApplication }: Props) {
 
       <div className="topbar-right">
         <a href={`mailto:${SUPPORT_EMAIL}`} className="link">
-          Partner support
+          Vendor support
         </a>
         {/* The vendor is a label, not an account: there is no sign-in here, so
             an avatar would promise something the product does not have. */}
