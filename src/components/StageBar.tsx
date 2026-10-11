@@ -1,10 +1,14 @@
+import type { CSSProperties } from 'react';
 import type { Progress } from '../submission';
 import { CheckIcon } from './Icons';
 
 export function StageBar({ progress }: { progress: Progress }) {
   return (
     <nav className="stagebar" aria-label="Application progress">
-      <div className="stagebar-inner">
+      <div
+        className="stagebar-inner"
+        style={{ '--stage-count': progress.stages.length } as CSSProperties}
+      >
         {progress.stages.map(({ stage, state }, i) => (
           <div key={stage.id} className={`stage stage--${state}`}>
             <span className="stage-dot" aria-hidden="true">

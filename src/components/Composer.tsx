@@ -20,14 +20,16 @@ export const Composer = forwardRef<HTMLTextAreaElement, Props>(function Composer
         onSend();
       }}
     >
-      <label htmlFor="reply" className="composer-label">
+      {/* The visible label cost a line of a cramped card; the placeholder and
+          the hint below carry the same meaning, so it goes to screen readers. */}
+      <label htmlFor="reply" className="sr-only">
         Your reply
       </label>
       <div className="composer-box">
         <textarea
           id="reply"
           ref={ref}
-          rows={3}
+          rows={2}
           value={value}
           placeholder="Answer in your own words…"
           disabled={pending}
@@ -39,14 +41,12 @@ export const Composer = forwardRef<HTMLTextAreaElement, Props>(function Composer
             }
           }}
         />
-        <div className="composer-foot">
-          <span className="composer-hint">Enter to send · Shift + Enter for a new line</span>
-          <button type="submit" className="btn btn--primary" disabled={pending || !value.trim()}>
-            {pending ? 'Sending…' : 'Send'}
-            <ArrowIcon />
-          </button>
-        </div>
+        <button type="submit" className="btn btn--primary" disabled={pending || !value.trim()}>
+          {pending ? 'Sending…' : 'Send'}
+          <ArrowIcon />
+        </button>
       </div>
+      <p className="composer-hint">Enter to send · Shift + Enter for a new line</p>
     </form>
   );
 });

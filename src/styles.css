@@ -294,13 +294,13 @@ a:hover {
 .stagebar-inner {
   max-width: 1400px;
   margin: 0 auto;
-  /* Four equal stages plus a trailing column for the counter. A grid keeps the
-     counter on the rail's line at every width instead of wrapping below it
-     somewhere between 860 and 1100px. */
+  /* One column per stage plus a trailing column for the counter, so the rail
+     stays on a single line however many stages there are. The count comes from
+     the component, which owns the stage list. */
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(var(--stage-count, 4), minmax(0, 1fr)) auto;
   align-items: center;
-  gap: 10px 11.5px;
+  gap: 0 10px;
 }
 
 .stagebar-compact {
@@ -714,7 +714,7 @@ a:hover {
 
 .composer {
   border-top: 1px solid var(--line-soft);
-  padding: 13px var(--card-x) 15px;
+  padding: 10px var(--card-x) 12px;
   flex: none;
 }
 
@@ -730,7 +730,10 @@ a:hover {
   border: 1px solid var(--field-line);
   border-radius: 10px;
   background: var(--surface);
-  padding: 10px 11.5px;
+  padding: 7px 7px 7px 11.5px;
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
 }
 
 .composer-box:focus-within {
@@ -738,7 +741,11 @@ a:hover {
 }
 
 .composer textarea {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
+  /* Two lines to start, growing with the content rather than reserving space
+     the vendor is not using. */
+  max-height: 96px;
   border: 0;
   resize: none;
   font: inherit;
@@ -752,14 +759,14 @@ a:hover {
 
 .composer-foot {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
+  gap: 10px;
+  margin-top: 6px;
 }
 
 .composer-hint {
+  margin: 6px 0 0;
   font-size: 11px;
   color: var(--muted);
 }

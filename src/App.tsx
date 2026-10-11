@@ -261,13 +261,9 @@ export default function App() {
         <div className="page-inner console">
           <section className="card thread-card">
             <div className="card-head card-head--row">
-              <div>
-                <h1>Onboarding session</h1>
-                <p>
-                  An onboarding manager works through each requirement and records your answers
-                  as you give them. You can leave and return at any point.
-                </p>
-              </div>
+              {/* The explanation lives on the welcome screen. Inside the session
+                  it only costs the conversation two lines of height. */}
+              <h1>Onboarding session</h1>
               <span className="saved">Saved</span>
             </div>
 
