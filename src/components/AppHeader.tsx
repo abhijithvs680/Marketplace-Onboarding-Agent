@@ -1,12 +1,14 @@
 import { COMPANY, PRODUCT, SUPPORT_EMAIL } from '../brand';
-import { MarkIcon, PersonIcon } from './Icons';
+import { MarkIcon } from './Icons';
 
 interface Props {
-  /** The vendor, once the agent has reported it. */
+  /** The vendor, once the platform has reported it. */
   vendor?: string;
+  /** Abandon this application and start a fresh one. */
+  onNewApplication: () => void;
 }
 
-export function AppHeader({ vendor }: Props) {
+export function AppHeader({ vendor, onNewApplication }: Props) {
   return (
     <header className="topbar">
       <div className="brand">
@@ -22,19 +24,13 @@ export function AppHeader({ vendor }: Props) {
         <a href={`mailto:${SUPPORT_EMAIL}`} className="link">
           Partner support
         </a>
-        <span className="account">
-          <span className="avatar" aria-hidden="true">
-            {/* No vendor yet means no initials — a neutral mark, never a dash. */}
-            {vendor ? initials(vendor) : <PersonIcon />}
-          </span>
-          <span className="account-name">{vendor ?? 'New application'}</span>
-        </span>
+        {/* The vendor is a label, not an account: there is no sign-in here, so
+            an avatar would promise something the product does not have. */}
+        {vendor ? <span className="account-name">{vendor}</span> : null}
+        <button type="button" className="btn btn--quiet btn--sm" onClick={onNewApplication}>
+          New application
+        </button>
       </div>
     </header>
   );
-}
-
-function initials(vendor: string): string | null {
-  const words = vendor.split(/\s+/).filter(Boolean);
-  return (words[0]?.[0] ?? '').concat(words[1]?.[0] ?? '').toUpperCase() || null;
 }

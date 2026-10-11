@@ -17,6 +17,7 @@ App: **Plug-In Integration**, `lid 3111`, short code
 | `VendorOnboardingSessionsV2` | `6acab508b76bb25d3f0d1482` | `vendoronboardingsessionsv26acab508e8986` |
 | `VendorFeaturesV2` | `6acab523701586f2950208c4` | `vendorfeaturesv26acab523c5621` |
 | `VendorApiInfoV2` | `6acab53f3d2759968f006e52` | `vendorapiinfov26acab53fe7a99` |
+| `VendorOnboardingMessages` | `6acb4a8910fd15c7f900cf64` | `vendoronboardingmessages6acb4a8961591` |
 
 Columns are as PLAN.md Part A specifies.
 
@@ -56,6 +57,7 @@ List sheets with ids and short codes:
 | `MarketPlaceOnboard_StartSession` | `marketplaceonboardstartsession6acb1116386db` | Mints the reference, creates the session row, reuses it on a return visit |
 | `MarketPlaceOnboard_GetApplication` | `marketplaceonboardgetapplication6acb104b64b60` | The read model behind the stage rail, the panel and the review page |
 | `MarketPlaceOnboard_SubmitApplication` | `marketplaceonboardsubmitapplication6acb12e31996b` | `submit_application` — stamps `submitted` on the session and the vendor |
+| `MarketPlaceOnboard_GetMessages` | `marketplaceonboardgetmessages6acb4aee8f79a` | Returns the stored transcript for a session |
 
 ### Verified end to end
 
@@ -112,7 +114,9 @@ for the `add_vendor` path.
 
 ### Still open
 
-- **No timestamps.** `CreatedAt`, `UpdatedAt`, `LastTurnAt` and `SubmittedAt`
+- **No timestamps.** (`CreatedAt` on the messages sheet is unmapped too; the
+  transcript relies on insertion order.)
+- Original item: `CreatedAt`, `UpdatedAt`, `LastTurnAt` and `SubmittedAt`
   are never written — a `date` block (2056) feeding `{Date.value}` would do it,
   the way `Plugin_Integration_ConsultationInsert` does.
 - **No confirmation email.** PLAN.md B5/B6 (notify partnerships, reminder
@@ -215,3 +219,27 @@ What works is ending the workflow on **`clearoutput` → `setvariable`**: the
 `setvariable` merges named values into one empty row and the engine encodes the
 response itself. That is why `GetApplication` answers a flat row rather than
 the nested object PLAN.md first imagined, and why `src/vizru.ts` accepts both.
+
+
+## The transcript is stored, not just cached
+
+The agent workflow writes **both sides of every turn** to
+`VendorOnboardingMessages`, so a vendor who returns on another machine still
+sees the conversation — `localStorage` only ever covered one browser.
+
+```
+Entry → Agent → LogUser (1800_30) → LogAgent (1800_31) → Reset (2049_32) → Reply (1700_33)
+```
+
+Two things make that safe:
+
+- The agent block is labelled **`Agent`**, not `Agent Node`. A label with a
+  space cannot be referenced as `{Agent Node.response}`.
+- Appending blocks after the Agent Node changes which block ends the run, and
+  the trigger shapes its response from the **last block**. `Reply` re-emits
+  `response={Agent.response}` after a `clearoutput`, so the HTTP body the
+  client sees is unchanged.
+
+`MarketPlaceOnboard_GetMessages` reads it back, aliasing the columns to
+`role` / `message` with `alias_column`. The client hydrates from it on load and
+falls back to its local copy.

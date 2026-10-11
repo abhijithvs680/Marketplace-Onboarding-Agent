@@ -36,6 +36,7 @@ export const WORKFLOW_SHORTCODE =
 /** Part B workflows. Empty until the short code is recorded in `.env`. */
 export const START_SHORTCODE = (import.meta.env.VITE_VIZRU_WORKFLOW_START ?? '').trim();
 export const GET_SHORTCODE = (import.meta.env.VITE_VIZRU_WORKFLOW_GET ?? '').trim();
+export const MESSAGES_SHORTCODE = (import.meta.env.VITE_VIZRU_WORKFLOW_MESSAGES ?? '').trim();
 
 const TIMEOUT_MS = Number(import.meta.env.VITE_VIZRU_TIMEOUT_MS ?? 180_000);
 
@@ -312,6 +313,37 @@ function flatten(row: Record<string, unknown>): Pick<ApplicationState, 'vendor' 
           ? [{ environment, base_url: baseUrl, auth_method: authMethod }]
           : [],
   };
+}
+
+/** One stored turn of the conversation, as MarketPlaceOnboard_GetMessages returns it. */
+export interface TranscriptTurn {
+  role: 'user' | 'agent' | string;
+  message: string;
+}
+
+/**
+ * The conversation as the platform holds it.
+ *
+ * The agent workflow writes both sides of every turn to
+ * VendorOnboardingMessages, so a vendor who returns on another machine still
+ * sees the history — `localStorage` only ever covered the same browser.
+ * Returns `null` when the workflow is not configured.
+ */
+export async function getMessages(
+  sessionId: string,
+  options: CallOptions = {},
+): Promise<TranscriptTurn[] | null> {
+  if (!MESSAGES_SHORTCODE) return null;
+
+  const payload = await callWorkflow(
+    MESSAGES_SHORTCODE,
+    { session_id: sessionId },
+    { timeoutMs: QUICK_TIMEOUT_MS, ...options },
+  );
+
+  return asRows(payload)
+    .map((row) => ({ role: str(row.role) ?? '', message: str(row.message) ?? '' }))
+    .filter((turn) => turn.message && (turn.role === 'user' || turn.role === 'agent'));
 }
 
 /* -------------------------------------------------------------------- shapes */

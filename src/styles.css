@@ -25,11 +25,11 @@
   --radius: 12px;
   /* One horizontal scale for everything inside a card: the card head, the
      messages, the composer and the field list all share this left edge. */
-  --card-x: 24px;
+  --card-x: 19px;
   /* The speaker avatar and the gap beside it, so anything that has to clear it
      can be derived rather than hardcoded. */
-  --speaker-size: 32px;
-  --turn-gap: 13px;
+  --speaker-size: 27px;
+  --turn-gap: 11px;
   --sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: light;
@@ -51,7 +51,7 @@ body {
   margin: 0;
   background: var(--canvas);
   color: var(--ink);
-  font: 15px/1.55 var(--sans);
+  font: 13.5px/1.5 var(--sans);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -78,7 +78,7 @@ a:hover {
   width: 1px;
   height: 1px;
   padding: 0;
-  margin: -1px;
+  margin: -2px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
@@ -95,7 +95,7 @@ a:hover {
 
 .muted {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 11.5px;
   line-height: 1.55;
 }
 
@@ -103,22 +103,19 @@ a:hover {
 
 .btn {
   font: inherit;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-height: 44px;
-  padding: 0 20px;
+  gap: 7.5px;
+  min-height: 38px;
+  padding: 0 16.5px;
   border-radius: 8px;
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    opacity 0.15s ease;
+  transition: background 0.15s ease,;
 }
 
 .btn--primary {
@@ -140,10 +137,17 @@ a:hover {
 }
 
 .btn--lg {
-  min-height: 48px;
-  font-size: 15px;
-  padding: 0 24px;
+  min-height: 41.5px;
+  font-size: 13px;
+  padding: 0 19.5px;
   border-radius: 9px;
+}
+
+.btn--sm {
+  min-height: 30px;
+  padding: 0 11px;
+  font-size: 12px;
+  border-radius: 7px;
 }
 
 .btn--block {
@@ -157,7 +161,7 @@ a:hover {
 
 .linkbtn {
   font: inherit;
-  font-size: 13.5px;
+  font-size: 11.5px;
   background: none;
   border: 0;
   padding: 0;
@@ -171,13 +175,13 @@ a:hover {
 
 .chip {
   font: inherit;
-  font-size: 13.5px;
+  font-size: 11.5px;
   background: var(--surface);
   border: 1px solid var(--field-line);
   color: var(--ink);
   border-radius: 999px;
-  padding: 0 15px;
-  min-height: 44px;
+  padding: 0 12.5px;
+  min-height: 38px;
   cursor: pointer;
 }
 .chip:hover {
@@ -190,21 +194,21 @@ a:hover {
 .topbar {
   background: var(--surface);
   border-bottom: 1px solid var(--line);
-  padding: 0 32px;
-  min-height: 60px;
+  padding: 0 26px;
+  min-height: 51.5px;
   flex: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 13px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 0;
+  gap: 10px;
+  padding: 8px 0;
 }
 
 .brand-mark {
@@ -220,7 +224,7 @@ a:hover {
 }
 
 .brand-name {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -232,27 +236,27 @@ a:hover {
 }
 
 .brand-product {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--muted);
 }
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 10px 0;
+  gap: 16.5px;
+  padding: 8px 0;
 }
 
 .link {
-  font-size: 14px;
+  font-size: 12px;
   text-decoration: none;
 }
 
 .account {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding-left: 20px;
+  gap: 7.5px;
+  padding-left: 16.5px;
   border-left: 1px solid var(--line);
 }
 
@@ -271,7 +275,7 @@ a:hover {
 }
 
 .account-name {
-  font-size: 14px;
+  font-size: 12px;
   max-width: 26ch;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -283,7 +287,7 @@ a:hover {
 .stagebar {
   background: var(--surface);
   border-bottom: 1px solid var(--line);
-  padding: 10px 32px;
+  padding: 8px 26px;
   flex: none;
 }
 
@@ -296,7 +300,7 @@ a:hover {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
   align-items: center;
-  gap: 12px 14px;
+  gap: 10px 11.5px;
 }
 
 .stagebar-compact {
@@ -307,7 +311,7 @@ a:hover {
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 .stage-dot {
@@ -318,8 +322,8 @@ a:hover {
   align-items: center;
   justify-content: center;
   flex: none;
-  margin-top: 1px;
-  font-size: 12px;
+  margin-top: 2px;
+  font-size: 11px;
   font-weight: 600;
   border: 2px solid var(--field-line);
   color: var(--muted);
@@ -343,7 +347,7 @@ a:hover {
 
 .stage-label {
   display: block;
-  font-size: 13.5px;
+  font-size: 11.5px;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -360,7 +364,7 @@ a:hover {
 
 .stage-state {
   display: block;
-  font-size: 12.5px;
+  font-size: 11px;
   color: var(--muted);
   margin-top: 2px;
 }
@@ -371,7 +375,7 @@ a:hover {
 
 .stage-count {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -393,7 +397,7 @@ a:hover {
   }
 
   .stage-label {
-    font-size: 13px;
+    font-size: 11.5px;
   }
 }
 
@@ -404,7 +408,7 @@ a:hover {
   /* min-height: 0 is what lets a flex child shrink below its content and so
      makes the overflow below actually take effect. */
   min-height: 0;
-  padding: 18px 32px 20px;
+  padding: 15px 26px 16.5px;
   overflow-y: auto;
 }
 
@@ -430,7 +434,7 @@ a:hover {
      be twice the available height and get clipped. The columns shrink instead,
      and below 860px the layout switches to the stacked phone flow. */
   flex-wrap: nowrap;
-  gap: 24px;
+  gap: 19.5px;
   align-items: stretch;
   height: 100%;
   min-height: 0;
@@ -443,7 +447,7 @@ a:hover {
 }
 
 .card--pad {
-  padding: 13px 16px;
+  padding: 10.5px 13px;
 }
 
 /* A paragraph in a padded card is spaced by the heading's margin and the
@@ -453,57 +457,57 @@ a:hover {
 }
 
 .card--pad h2 {
-  margin: 0 0 3px;
-  font-size: 14.5px;
+  margin: 0 0 2.5px;
+  font-size: 12.5px;
   font-weight: 600;
 }
 
 .card-head {
-  padding: 16px var(--card-x) 13px;
+  padding: 13px var(--card-x) 10.5px;
   border-bottom: 1px solid var(--line-soft);
 }
 
 .card-head--row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-start;
   justify-content: space-between;
 }
 
 .card-head h1 {
   margin: 0;
-  font-size: 19px;
+  font-size: 16.5px;
   font-weight: 600;
 }
 
 .card-head h2,
 .card-head h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
 }
 
 .card-head p {
-  margin: 4px 0 0;
-  font-size: 12.5px;
+  margin: 3.5px 0 0;
+  font-size: 11px;
   color: var(--muted);
   max-width: 58ch;
 }
 
 .card-foot {
-  padding: 0 var(--card-x) 12px;
+  padding: 0 var(--card-x) 10px;
 }
 
 .saved {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 5.5px;
   background: var(--ok-bg);
   color: var(--ok-ink);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  padding: 5px 11px;
+  padding: 4px 9px;
   border-radius: 999px;
   white-space: nowrap;
 }
@@ -520,7 +524,7 @@ a:hover {
 /* ---------- conversation ---------- */
 
 .thread {
-  padding: 20px var(--card-x);
+  padding: 16.5px var(--card-x);
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -535,7 +539,7 @@ a:hover {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 19.5px;
 }
 
 .turn {
@@ -548,8 +552,8 @@ a:hover {
 }
 
 .turn-who {
-  margin: 0 0 6px;
-  font-size: 12px;
+  margin: 0 0 5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--muted);
 }
@@ -563,7 +567,7 @@ a:hover {
   max-width: 62ch;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .turn-body .turn-who {
@@ -583,9 +587,9 @@ a:hover {
 }
 
 .bubble {
-  padding: 14px 17px;
+  padding: 11.5px 14px;
   border-radius: var(--radius);
-  font-size: 14.5px;
+  font-size: 12.5px;
   line-height: 1.6;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -624,41 +628,41 @@ a:hover {
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6.5px;
   background: #eff5f3;
   border-bottom: 1px solid var(--accent-line);
-  padding: 9px 15px;
-  font-size: 12.5px;
+  padding: 7.5px 12.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--accent);
 }
 
 .record-fields {
   margin: 0;
-  padding: 14px 15px;
+  padding: 11.5px 12.5px;
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 36px;
+  gap: 11.5px 29.5px;
 }
 
 .record-fields dt {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .record-fields dd {
-  margin: 4px 0 0;
-  font-size: 14px;
+  margin: 3.5px 0 0;
+  font-size: 12px;
 }
 
 .thinking {
   display: flex;
-  gap: 5px;
+  gap: 4px;
   align-items: center;
-  padding: 18px 17px;
+  padding: 15px 14px;
 }
 
 .thinking i {
@@ -701,32 +705,32 @@ a:hover {
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6.5px;
   /* Lines up with the turn body, past the speaker avatar. */
-  margin: 18px 0 0 calc(var(--speaker-size) + var(--turn-gap));
+  margin: 15px 0 0 calc(var(--speaker-size) + var(--turn-gap));
 }
 
 /* ---------- composer ---------- */
 
 .composer {
   border-top: 1px solid var(--line-soft);
-  padding: 16px var(--card-x) 18px;
+  padding: 13px var(--card-x) 15px;
   flex: none;
 }
 
 .composer-label {
   display: block;
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--muted);
-  margin-bottom: 8px;
+  margin-bottom: 6.5px;
 }
 
 .composer-box {
   border: 1px solid var(--field-line);
   border-radius: 10px;
   background: var(--surface);
-  padding: 12px 14px;
+  padding: 10px 11.5px;
 }
 
 .composer-box:focus-within {
@@ -738,7 +742,7 @@ a:hover {
   border: 0;
   resize: none;
   font: inherit;
-  font-size: 14.5px;
+  font-size: 12.5px;
   line-height: 1.6;
   color: var(--ink);
   background: transparent;
@@ -749,14 +753,14 @@ a:hover {
 .composer-foot {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   align-items: center;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .composer-hint {
-  font-size: 12.5px;
+  font-size: 11px;
   color: var(--muted);
 }
 
@@ -769,7 +773,7 @@ a:hover {
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 7.5px;
   /* A short window degrades to one internal scrollbar here, never a page one. */
   overflow-y: auto;
   scrollbar-gutter: stable;
@@ -784,15 +788,15 @@ a:hover {
 
 .fields {
   margin: 0;
-  padding: 4px var(--card-x) 10px;
+  padding: 3.5px var(--card-x) 8px;
 }
 
 .field {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 6px 0;
+  gap: 10px;
+  padding: 5px 0;
   border-bottom: 1px solid #f1f3f5;
 }
 
@@ -810,7 +814,7 @@ a:hover {
 
 .field-label {
   display: block;
-  font-size: 13.5px;
+  font-size: 11.5px;
   line-height: 1.4;
   color: var(--muted);
 }
@@ -825,9 +829,9 @@ a:hover {
 }
 
 .status {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 500;
-  padding: 4px 9px;
+  padding: 3.5px 7.5px;
   border-radius: 6px;
   white-space: nowrap;
 }
@@ -846,7 +850,7 @@ a:hover {
 }
 
 .card--pad .btn {
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .card--pad.stack .btn {
@@ -856,7 +860,7 @@ a:hover {
 .stack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* ---------- welcome ---------- */
@@ -864,15 +868,15 @@ a:hover {
 .welcome {
   display: flex;
   flex-direction: column;
-  gap: 26px;
-  padding-top: 6px;
+  gap: 21.5px;
+  padding-top: 5px;
   max-width: 1180px;
 }
 
 .welcome-top {
   display: flex;
   flex-wrap: wrap;
-  gap: 40px;
+  gap: 33px;
   align-items: flex-start;
 }
 
@@ -882,9 +886,9 @@ a:hover {
 }
 
 .eyebrow {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
@@ -892,7 +896,7 @@ a:hover {
 
 .welcome-copy h1 {
   margin: 0;
-  font-size: 38px;
+  font-size: 33px;
   line-height: 1.14;
   font-weight: 600;
   letter-spacing: -0.025em;
@@ -900,8 +904,8 @@ a:hover {
 }
 
 .lede {
-  margin: 16px 0 0;
-  font-size: 16px;
+  margin: 13px 0 0;
+  font-size: 14px;
   line-height: 1.65;
   color: var(--ink-2);
   max-width: 58ch;
@@ -910,38 +914,38 @@ a:hover {
 .welcome-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 10px;
+  margin-top: 19.5px;
 }
 
 .welcome-note {
-  margin-top: 14px;
+  margin-top: 11.5px;
 }
 
 .welcome-needs {
   flex: 1 1 340px;
   min-width: 320px;
-  padding: 22px;
+  padding: 18px;
 }
 
 .welcome-needs h2 {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .ticks {
   list-style: none;
-  margin: 14px 0 0;
+  margin: 11.5px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 11px;
+  gap: 9px;
 }
 
 .ticks li {
   display: flex;
-  gap: 11px;
+  gap: 9px;
   align-items: flex-start;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -959,14 +963,14 @@ a:hover {
 }
 
 .welcome-secure {
-  margin-top: 16px;
-  padding-top: 14px;
+  margin-top: 13px;
+  padding-top: 11.5px;
   border-top: 1px solid var(--line-soft);
 }
 
 .section-head {
-  margin: 0 0 14px;
-  font-size: 15px;
+  margin: 0 0 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--muted);
 }
@@ -977,29 +981,29 @@ a:hover {
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 13px;
 }
 
 .steps li {
-  padding: 20px;
+  padding: 16.5px;
 }
 
 .step-n {
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--accent);
 }
 
 .steps h3 {
-  margin: 8px 0 6px;
-  font-size: 16.5px;
+  margin: 6.5px 0 5px;
+  font-size: 14.5px;
   font-weight: 600;
 }
 
 .steps p {
   margin: 0;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.6;
   color: var(--ink-2);
 }
@@ -1009,7 +1013,7 @@ a:hover {
 .review {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 15px;
   max-width: 1180px;
 }
 
@@ -1018,10 +1022,10 @@ a:hover {
   border: 1px solid var(--line);
   border-left: 4px solid var(--field-line);
   border-radius: var(--radius);
-  padding: 18px 22px;
+  padding: 15px 18px;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16.5px;
   align-items: flex-start;
   justify-content: space-between;
 }
@@ -1033,7 +1037,7 @@ a:hover {
 
 .banner-main {
   display: flex;
-  gap: 16px;
+  gap: 13px;
   min-width: 0;
 }
 
@@ -1056,13 +1060,13 @@ a:hover {
 
 .banner h1 {
   margin: 0;
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 600;
 }
 
 .banner p {
-  margin: 7px 0 0;
-  font-size: 14.5px;
+  margin: 5.5px 0 0;
+  font-size: 12.5px;
   line-height: 1.6;
   color: var(--ink-2);
   max-width: 62ch;
@@ -1075,23 +1079,23 @@ a:hover {
 .ref-label {
   margin: 0;
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .ref-value {
-  margin: 5px 0 0;
+  margin: 4px 0 0;
   font-family: var(--mono);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
 }
 
 .review-cols {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 19.5px;
   align-items: flex-start;
 }
 
@@ -1100,28 +1104,28 @@ a:hover {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 11.5px;
 }
 
 .review-fields {
   margin: 0;
-  padding: 14px var(--card-x);
+  padding: 11.5px var(--card-x);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 32px;
+  gap: 11.5px 26px;
 }
 
 .review-fields dt {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .review-fields dd {
-  margin: 5px 0 0;
-  font-size: 14.5px;
+  margin: 4px 0 0;
+  font-size: 12.5px;
   overflow-wrap: anywhere;
 }
 
@@ -1131,16 +1135,16 @@ a:hover {
 
 .timeline {
   list-style: none;
-  margin: 10px 0 0;
+  margin: 8px 0 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 11.5px;
 }
 
 .timeline li {
   display: flex;
-  gap: 13px;
+  gap: 10.5px;
 }
 
 .timeline-rail {
@@ -1156,7 +1160,7 @@ a:hover {
   border-radius: 50%;
   border: 2px solid #c6ccd2;
   background: var(--surface);
-  margin-top: 4px;
+  margin-top: 3.5px;
 }
 
 .node--on {
@@ -1168,21 +1172,21 @@ a:hover {
   width: 2px;
   flex: 1;
   background: var(--line);
-  margin-top: 5px;
+  margin-top: 4px;
 }
 
 .timeline-title {
   display: block;
-  font-size: 14.5px;
+  font-size: 12.5px;
   font-weight: 600;
 }
 
 .timeline-text {
   display: block;
-  font-size: 13.5px;
+  font-size: 11.5px;
   line-height: 1.55;
   color: var(--muted);
-  margin-top: 3px;
+  margin-top: 2.5px;
 }
 
 /* ---------- footer, toast ---------- */
@@ -1190,23 +1194,23 @@ a:hover {
 .footer {
   border-top: 1px solid var(--line);
   background: var(--surface);
-  padding: 16px 32px;
+  padding: 13px 26px;
   flex: none;
 }
 
 /* On the console every pixel below the fold costs the conversation, so the
    footer keeps its links and loses its height. */
 .footer--slim {
-  padding: 7px 32px;
+  padding: 5.5px 26px;
 }
 
 .footer--slim .muted,
 .footer--slim .footer-links a {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .footer--slim .footer-inner {
-  gap: 8px 18px;
+  gap: 6.5px 15px;
 }
 
 .footer-inner {
@@ -1214,7 +1218,7 @@ a:hover {
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 13px;
   align-items: center;
   justify-content: space-between;
 }
@@ -1226,11 +1230,11 @@ a:hover {
 .footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16.5px;
 }
 
 .footer-links a {
-  font-size: 13px;
+  font-size: 11.5px;
   text-decoration: none;
 }
 
@@ -1242,8 +1246,8 @@ a:hover {
   margin: 0;
   background: var(--ink);
   color: #fff;
-  font-size: 13.5px;
-  padding: 11px 18px;
+  font-size: 11.5px;
+  padding: 9px 15px;
   border-radius: 8px;
   box-shadow: 0 8px 24px rgb(20 26 31 / 18%);
 }
@@ -1262,7 +1266,7 @@ a:hover {
   .page,
   .page--console {
     overflow: visible;
-    padding: 16px 16px 28px;
+    padding: 13px 13px 23px;
   }
 
   .page--console .page-inner,
@@ -1289,13 +1293,13 @@ a:hover {
   .stagebar,
   .footer,
   .footer--slim {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 13px;
+    padding-right: 13px;
   }
 
   .stagebar {
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding-top: 11.5px;
+    padding-bottom: 11.5px;
   }
 
   .stagebar-inner {
@@ -1310,16 +1314,16 @@ a:hover {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
   }
 
   .stagebar-compact .meter {
-    margin-top: 9px;
+    margin-top: 7.5px;
   }
 
   .stagebar-compact-note {
-    margin: 9px 0 0;
-    font-size: 12.5px;
+    margin: 7.5px 0 0;
+    font-size: 11px;
     color: var(--muted);
   }
 
@@ -1328,11 +1332,11 @@ a:hover {
   }
 
   .account {
-    padding-left: 14px;
+    padding-left: 11.5px;
   }
 
   .thread {
-    padding: 18px 16px;
+    padding: 15px 13px;
     flex: none;
     overflow-y: visible;
   }
@@ -1347,7 +1351,7 @@ a:hover {
   }
 
   .card-foot {
-    padding-bottom: 16px;
+    padding-bottom: 13px;
   }
 
   .suggestions {
@@ -1355,19 +1359,19 @@ a:hover {
   }
 
   .welcome-copy h1 {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .lede {
-    font-size: 15.5px;
+    font-size: 13.5px;
   }
 
   .welcome-top {
-    gap: 28px;
+    gap: 23px;
   }
 
   .welcome {
-    gap: 32px;
+    gap: 26px;
   }
 
   .steps {
@@ -1376,11 +1380,11 @@ a:hover {
 
   .review-fields {
     grid-template-columns: minmax(0, 1fr);
-    padding: 16px;
+    padding: 13px;
   }
 
   .banner {
-    padding: 20px 18px;
+    padding: 16.5px 15px;
   }
 
   .banner-ref {
@@ -1396,7 +1400,7 @@ a:hover {
 
 .rich-p,
 .rich-heading {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
 }
 
 .rich-heading {
@@ -1410,11 +1414,11 @@ a:hover {
 }
 
 .rich-list {
-  margin: 0 0 10px;
-  padding-left: 22px;
+  margin: 0 0 8px;
+  padding-left: 18px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .bubble code {
@@ -1422,7 +1426,7 @@ a:hover {
   font-size: 0.92em;
   background: #eceff2;
   border-radius: 4px;
-  padding: 1px 5px;
+  padding: 2px 4px;
 }
 
 .bubble--user code {

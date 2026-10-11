@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getApplication, runOnboardingAgent, startSession, VizruError } from './vizru';
+import { getApplication, getMessages, runOnboardingAgent, startSession, VizruError } from './vizru';
 import { COMPANY, SUPPORT_EMAIL } from './brand';
 import {
   loadRecord,
@@ -105,6 +105,31 @@ export default function App() {
     return () => controller.abort();
   }, [refresh]);
 
+  // The transcript lives on the platform too, so a vendor who comes back on a
+  // different machine still sees the conversation. localStorage only ever
+  // covered this browser; the platform copy wins when it has anything.
+  useEffect(() => {
+    const controller = new AbortController();
+    (async () => {
+      try {
+        const stored = await getMessages(sessionId, { signal: controller.signal });
+        if (!stored?.length || controller.signal.aborted) return;
+        setTurns(
+          stored.map((turn) => ({
+            id: newTurnId(),
+            role: turn.role === 'user' ? ('user' as const) : ('agent' as const),
+            text: turn.message,
+            at: Date.now(),
+          })),
+        );
+        setView((current) => (current === 'welcome' ? 'console' : current));
+      } catch (err) {
+        if (!controller.signal.aborted) console.warn('[vizru] could not read the transcript', err);
+      }
+    })();
+    return () => controller.abort();
+  }, [sessionId]);
+
   const progress = useMemo(() => progressOf(record), [record]);
 
   const send = useCallback(
@@ -206,7 +231,7 @@ export default function App() {
   if (view === 'welcome') {
     return (
       <div className="app">
-        <AppHeader vendor={record.captured.legal_entity} />
+        <AppHeader vendor={record.captured.legal_entity} onNewApplication={startNew} />
         <Welcome hasDraft={turns.length > 0} onStart={open} onStartNew={startNew} />
         <Footer />
       </div>
@@ -216,7 +241,7 @@ export default function App() {
   if (view === 'review') {
     return (
       <div className="app">
-        <AppHeader vendor={record.captured.legal_entity} />
+        <AppHeader vendor={record.captured.legal_entity} onNewApplication={startNew} />
         <Review
           record={record}
           reference={referenceOf(record, sessionId)}
@@ -229,7 +254,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <AppHeader vendor={record.captured.legal_entity} />
+      <AppHeader vendor={record.captured.legal_entity} onNewApplication={startNew} />
       <StageBar progress={progress} />
 
       <main className="page page--console">
