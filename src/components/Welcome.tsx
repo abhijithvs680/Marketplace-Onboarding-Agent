@@ -42,7 +42,7 @@ export function Welcome({ hasDraft, onStart, onStartNew }: Props) {
             <p className="eyebrow">Vendor application</p>
             <h1>List your product on the dental marketplace</h1>
             <p className="lede">
-              A {COMPANY} onboarding manager will take you through the application in a single
+              A {COMPANY} onboarding agent will take you through the application in a single
               conversation: your company, the product and its regulatory position, the commercial
               terms, and how the two platforms integrate. Answer in your own words — each answer
               is recorded against your application as you give it.
