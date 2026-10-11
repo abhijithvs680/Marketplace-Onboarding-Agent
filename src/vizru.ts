@@ -273,9 +273,44 @@ export async function getApplication(
     status: str(row.status) ?? 'draft',
     stage: str(row.stage),
     reference: str(row.reference),
-    vendor: asRecord(row.vendor) as ApplicationVendor | undefined,
-    features: asRows(row.features) as ApplicationFeature[],
-    api: asRows(row.api) as ApplicationApi[],
+    ...flatten(row),
+  };
+}
+
+/**
+ * GetApplication answers one flat row, not a nested object.
+ *
+ * That is deliberate: a `customoutput` block has to build its JSON as a
+ * template, and the engine strips `{...}` it cannot resolve — which eats the
+ * braces of the JSON itself and returns `null`. Ending the workflow on a
+ * `setvariable` instead lets the engine encode the response, so the shape is
+ * flat and reliable. A nested `vendor` / `features` / `api` is still accepted,
+ * for when the workflow grows a real composer.
+ */
+function flatten(row: Record<string, unknown>): Pick<ApplicationState, 'vendor' | 'features' | 'api'> {
+  const vendor = (asRecord(row.vendor) as ApplicationVendor | undefined) ?? {
+    vendor_id: str(row.vendor_id),
+    legal_entity: str(row.legal_entity),
+    primary_contact: str(row.primary_contact),
+  };
+
+  const features = asRows(row.features) as ApplicationFeature[];
+  const api = asRows(row.api) as ApplicationApi[];
+
+  const feature = str(row.feature);
+  const environment = str(row.environment);
+  const baseUrl = str(row.base_url);
+  const authMethod = str(row.auth_method);
+
+  return {
+    vendor,
+    features: features.length ? features : feature ? [{ feature }] : [],
+    api:
+      api.length
+        ? api
+        : environment || baseUrl || authMethod
+          ? [{ environment, base_url: baseUrl, auth_method: authMethod }]
+          : [],
   };
 }
 

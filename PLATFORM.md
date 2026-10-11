@@ -47,7 +47,38 @@ document.querySelector('input[placeholder=Name]').value = 'SheetName';
 List sheets with ids and short codes:
 `POST /ls/livespace.sslist/3111` with `X-Requested-With: XMLHttpRequest`.
 
-## Workflows (Part B) — partly done
+## Workflows (Part B) — done
+
+| Workflow | Short code | Role |
+|---|---|---|
+| `MarketPlaceOnboardAgent` | `marketplaceonboardagent6aca3281a3e51` | The conversation. Two tools: `create_vendor`, `submit_application` |
+| `MarketPlaceOnboard_SaveInformation` | `marketplaceonboardsaveinformation6aca3328c7c44` | `create_vendor` — four actions, writes every sheet |
+| `MarketPlaceOnboard_StartSession` | `marketplaceonboardstartsession6acb1116386db` | Mints the reference, creates the session row, reuses it on a return visit |
+| `MarketPlaceOnboard_GetApplication` | `marketplaceonboardgetapplication6acb104b64b60` | The read model behind the stage rail, the panel and the review page |
+| `MarketPlaceOnboard_SubmitApplication` | `marketplaceonboardsubmitapplication6acb12e31996b` | `submit_application` — stamps `submitted` on the session and the vendor |
+
+### Verified end to end
+
+A clean run through the live stack — start, three conversational turns, confirm —
+produces all six panel fields and a submitted application:
+
+```
+status: submitted · stage: review · reference: b0e0de2c-…
+legal_entity: Northgate Dental Systems Ltd · primary_contact: J. Whitfield
+feature: Practice management sync · environment: sandbox
+base_url: https://api.northgate.example.com/v2 · auth_method: OAuth 2.0 client credentials
+```
+
+### `create_vendor` actions
+
+| `action` | Writes |
+|---|---|
+| `add_vendor` | Inserts into `VendorsV2`, then stamps `VendorId` + `Stage=product` onto the session row |
+| `update_vendor_profile` | Updates `VendorsV2` with contact name, email, trading address |
+| `update_vendor_feature` | Inserts one row per capability into `VendorFeaturesV2` |
+| `update_api_info` | Insert-or-update into `VendorApiInfoV2`, keyed on `VendorId` + `Environment` |
+
+## How it was built
 
 `MarketPlaceOnboard_SaveInformation`, Mongo id **`6aca3328fecb4fbd9c009c63`**,
 short code `marketplaceonboardsaveinformation6aca3328c7c44`.
@@ -66,7 +97,7 @@ Entry (datatransfer 2001_3)
                       no  → CO 2049_13 (clearoutput)
 ```
 
-### Fixed and verified
+### Fixed along the way
 
 1. **`InsertVendor` (1800_8)** now points at `VendorsV2` and has a field
    mapping. A live `create_vendor` call writes a real row — confirmed:
@@ -79,22 +110,18 @@ The HTML error noise that used to precede the JSON
 (`Invalid SpreadsheetId` … `SpreadsheetOperationsBlock.php Line: 285`) is gone
 for the `add_vendor` path.
 
-### Still to do
+### Still open
 
-- **`2000_9` (update_api_info) and `2000_10` (update_vendor_feature)** still
-  point at no sheet. Before wiring them, settle a design question: the tool
-  passes `vendor_api_info` as a **JSON string**, which cannot map onto the
-  discrete `BaseUrl` / `AuthMethod` / `Environment` columns. Either give
-  `create_vendor` discrete parameters, or parse the JSON inside the workflow.
-- Both are `updatessdata`, which **no-ops when no row matches** — a silent
-  failure. Convert them to `insertorupdatessdata` (palette id 1900) via
-  `objectInsert` + `connectionInsert`/`connectionDelete` + `objectDelete`.
-- The tool has **no `session_id` parameter**, so nothing can write
-  `VendorOnboardingSessionsV2`. Add it to `skill_workflow_config` on the agent
-  block (`4211_4`), or pass it through `static_inputs`.
-- `GetApplication`, `StartSession`, `SubmitApplication` (PLAN.md B2–B4) are not
-  built.
-- Indexed columns are not set on any sheet.
+- **No timestamps.** `CreatedAt`, `UpdatedAt`, `LastTurnAt` and `SubmittedAt`
+  are never written — a `date` block (2056) feeding `{Date.value}` would do it,
+  the way `Plugin_Integration_ConsultationInsert` does.
+- **No confirmation email.** PLAN.md B5/B6 (notify partnerships, reminder
+  sweep) are not built.
+- **Indexed columns are not set** on any sheet. Filters work without them;
+  they matter for performance and for SQL mirrors.
+- **The four mis-shaped sheets** (`Vendors`, `VendorOnboardingSessions`,
+  `VendorFeatures`, `VendorApiInfo` — no `V2`) are empty and unused. Delete
+  them, then rename the `V2` sheets.
 
 ## The save protocol, as actually verified
 
@@ -155,3 +182,36 @@ silently dropped. `POST /workflow/connection.properties` with
 `mapright[]` only offers columns the sheet really has — a quick way to confirm
 a sheet's shape is to read that select's options after setting the block's
 `ssid`.
+
+
+## Creating a workflow from scratch
+
+1. Open `/workflow.html` and set `location.hash = '#workflow.new'`. The page
+   gives you a **temporary numeric `workflow_id`** — build against that.
+2. `objectInsert` one event per block: `blockId` (`<paletteId>_<n>`), `id`
+   (the palette id), `function_type` (the palette's `objType`), `iconPath`,
+   `xPos`, `yPos`. **`xPos` is CSS top and `yPos` is CSS left** — they are
+   transposed.
+3. `connectionInsert` per edge, `con_id` = `` `${source}-${target}` ``, and
+   `condition_type` `yes`/`no` out of a `condition` block.
+4. `customblockPropInsert` per block, then `connectionPropInsert` for any
+   spreadsheet write mapping.
+5. `POST /workflow.save` with the temp id and the name. The reply redirects to
+   `workflow.debugger/<new Mongo id>`; find the generated short code with
+   `POST /workflow.search`.
+
+`window.w_leftBlockArray` on any canvas page holds the palette — each item has
+`id`, `objType` and `iconPath`, which is where the `objectInsert` values come
+from.
+
+### Why no block returns JSON through `customoutput`
+
+The obvious way to shape a JSON response is a `customoutput` block with
+`outputDataType: json`. It does not work here: `outData` is template-rewritten
+before it is decoded, and the engine strips `{...}` it cannot resolve —
+including the JSON's own braces. The response came back as `null`.
+
+What works is ending the workflow on **`clearoutput` → `setvariable`**: the
+`setvariable` merges named values into one empty row and the engine encodes the
+response itself. That is why `GetApplication` answers a flat row rather than
+the nested object PLAN.md first imagined, and why `src/vizru.ts` accepts both.

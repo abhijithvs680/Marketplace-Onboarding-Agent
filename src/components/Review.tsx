@@ -54,7 +54,7 @@ export function Review({ record, reference, onBack }: Props) {
           </div>
           <div className="banner-ref">
             <p className="ref-label">Reference</p>
-            <p className="ref-value">{reference}</p>
+            <p className="ref-value">{shortRef(reference)}</p>
           </div>
         </section>
 
@@ -136,6 +136,16 @@ export function Review({ record, reference, onBack }: Props) {
   );
 }
 
+/**
+ * The platform mints the reference as a uuid. People read it aloud and type it
+ * into emails, so show the leading block and keep the full value in the
+ * downloaded copy for support to search on.
+ */
+function shortRef(reference: string): string {
+  if (!reference) return '—';
+  return reference.split('-')[0].toUpperCase();
+}
+
 function downloadSummary(record: SubmissionRecord, reference: string): void {
   const blob = new Blob([`Reference: ${reference}\n\n${summaryText(record)}`], {
     type: 'text/plain;charset=utf-8',
@@ -143,7 +153,7 @@ function downloadSummary(record: SubmissionRecord, reference: string): void {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `vizru-partner-application-${reference}.txt`;
+  link.download = `vizru-partner-application-${shortRef(reference)}.txt`;
   document.body.append(link);
   link.click();
   link.remove();
@@ -151,7 +161,7 @@ function downloadSummary(record: SubmissionRecord, reference: string): void {
 }
 
 function mailtoSummary(record: SubmissionRecord, reference: string): string {
-  const subject = `Vizru partner application ${reference}`;
+  const subject = `Vizru partner application ${shortRef(reference)}`;
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
     `Reference: ${reference}\n\n${summaryText(record)}`,
   )}`;
